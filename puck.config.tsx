@@ -1,10 +1,9 @@
-import type { Config } from "@puckeditor/core";
+import { DropZone, type Config } from "@puckeditor/core";
 import MoreProductSection from "./importedComponents/moreProductSection";
 import NewCollection from "./importedComponents/newCollection";
 import PopDownInfo from "./importedComponents/popDownInfo";
 import ProductImage from "./importedComponents/productImage";
 import ThreeKeyFacts from "./importedComponents/threeKeyFacts";
-
 type Props = {
   // DPP components
   HeroSection: {
@@ -98,6 +97,7 @@ type Props = {
     thickness: string;
     margin: string;
   };
+  Grid: {};
 };
 
 export const config: Config<Props> = {
@@ -120,10 +120,21 @@ export const config: Config<Props> = {
         "Video",
         "Button",
         "Divider",
+        "Grid",
       ],
     },
   },
   components: {
+    Grid: {
+      render() {
+        return (
+          <DropZone
+            zone="my-zone"
+            style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)" }}
+          />
+        );
+      },
+    },
     HeroSection: {
       fields: {
         imageUrl: { type: "text" },

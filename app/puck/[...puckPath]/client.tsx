@@ -34,6 +34,7 @@ export function Client({ path, data }: { path: string; data: Partial<Data> }) {
           method: "post",
           body: JSON.stringify({ data, path }),
         });
+        window.location.href = "/dashboard";
       }}
     />
   );

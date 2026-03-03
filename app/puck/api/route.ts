@@ -1,25 +1,28 @@
+import fs from "fs";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
-import fs from "fs";
 
 export async function POST(request: Request) {
-  const payload = await request.json();
+  const { path } = await request.json();
+  const db = JSON.parse(fs.readFileSync("database.json", "utf-8") || "{}");
 
-  const existingData = JSON.parse(
-    fs.existsSync("database.json")
-      ? fs.readFileSync("database.json", "utf-8")
-      : "{}"
-  );
+  if (db[path]) {
+    return NextResponse.json({ error: "Page already exists" }, { status: 409 });
+  }
 
-  const updatedData = {
-    ...existingData,
-    [payload.path]: payload.data,
-  };
+  db[path] = { content: [], root: { props: { title: "" } } };
+  fs.writeFileSync("database.json", JSON.stringify(db));
 
-  fs.writeFileSync("database.json", JSON.stringify(updatedData));
+  return NextResponse.json({ redirect: `/puck${path}` });
+}
 
-  // Purge Next.js cache
-  revalidatePath(payload.path);
+export async function DELETE(request: Request) {
+  const { path } = await request.json();
+  const db = JSON.parse(fs.readFileSync("database.json", "utf-8") || "{}");
 
-  return NextResponse.json({ status: "ok" });
+  delete db[path];
+  fs.writeFileSync("database.json", JSON.stringify(db));
+  revalidatePath(path);
+
+  return NextResponse.json({ status: "deleted" });
 }

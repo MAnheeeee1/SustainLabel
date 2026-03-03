@@ -1,1 +1,222 @@
-{"/":{"content":[{"type":"HeadingBlock","props":{"title":"Edit this page by adding /edit to the end of the URL","id":"HeadingBlock-1694032984497"}}],"root":{"props": {"title":""}}}}
+{
+  "/": {
+    "root": { "props": { "title": "" } },
+    "content": [
+      {
+        "type": "HeadingBlock",
+        "props": {
+          "title": "Edit this page by adding /edit to the end of the URL",
+          "id": "HeadingBlock-1694032984497"
+        }
+      },
+      {
+        "type": "Grid",
+        "props": { "id": "Grid-8f743518-864f-4ceb-8ae7-953d4b8114ef" }
+      },
+      {
+        "type": "Grid",
+        "props": { "id": "Grid-31e380fc-595b-4ef1-a00a-1094b8df3739" }
+      }
+    ],
+    "zones": {
+      "Grid-8f743518-864f-4ceb-8ae7-953d4b8114ef:my-zone": [
+        {
+          "type": "Heading",
+          "props": {
+            "title": "Heading",
+            "level": "h2",
+            "align": "left",
+            "color": "#000000",
+            "padding": "16px 24px",
+            "id": "Heading-36fff5c4-16be-4fe0-b070-508eaa6ca714"
+          }
+        },
+        {
+          "type": "Video",
+          "props": {
+            "url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+            "padding": "16px 24px",
+            "maxWidth": "800px",
+            "align": "center",
+            "id": "Video-f470e799-9885-4f91-8dc5-d2fc724a9334"
+          }
+        },
+        {
+          "type": "Image",
+          "props": {
+            "url": "/placeholder.webp",
+            "alt": "Image",
+            "maxWidth": "100%",
+            "align": "center",
+            "padding": "16px 24px",
+            "rounded": "8px",
+            "id": "Image-030b08ee-f508-4e42-9db2-7da47d5a30a6"
+          }
+        }
+      ],
+      "Grid-31e380fc-595b-4ef1-a00a-1094b8df3739:my-zone": [
+        {
+          "type": "Paragraph",
+          "props": {
+            "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam id felis et ipsum bibendum ultrices.",
+            "align": "left",
+            "color": "#333333",
+            "fontSize": "16px",
+            "maxWidth": "800px",
+            "padding": "16px 24px",
+            "id": "Paragraph-492bbf1b-6739-4fef-b986-051868819392"
+          }
+        }
+      ]
+    }
+  },
+  "/sara-jacket-8848": {
+    "root": { "props": {} },
+    "content": [
+      {
+        "type": "Heading",
+        "props": {
+          "title": "Heading",
+          "level": "h2",
+          "align": "left",
+          "color": "#000000",
+          "padding": "16px 24px",
+          "id": "Heading-d2713404-58be-4783-9a62-1aa5e4911d44"
+        }
+      },
+      {
+        "type": "Divider",
+        "props": {
+          "color": "#e2e2e2",
+          "thickness": "1px",
+          "margin": "16px 0",
+          "id": "Divider-24c54eec-c725-4aab-a042-4c376ce21c97"
+        }
+      },
+      {
+        "type": "HeroSection",
+        "props": {
+          "imageUrl": "/jacka.png",
+          "height": 400,
+          "width": 300,
+          "position": "center",
+          "altText": "Produkt Photo",
+          "articleNumber": "Art nr 89349018",
+          "id": "HeroSection-3bd67550-7982-45a2-94a3-8fdb87609d9f"
+        }
+      },
+      {
+        "type": "KeyMetric",
+        "props": {
+          "listofFacts": [
+            { "keyFact": "100%", "value": "Recycled" },
+            { "keyFact": "123kg", "value": "Impregnation" },
+            { "keyFact": "0.17kg", "value": "CO₂ " }
+          ],
+          "bgColor": "#E2E2E2",
+          "accentColor": "text-green-800",
+          "id": "KeyMetric-6ffcb19b-92cf-4ca1-936e-522cacf30928"
+        }
+      },
+      {
+        "type": "ExpandableCard",
+        "props": {
+          "items": [
+            {
+              "title": "Reparation, underhåll och återbruk",
+              "content": "Jackan är konstruerad med standardkomponenter som YKK‑dragkedjor, tryckknappar och utbytbara snoddar.",
+              "links": [
+                {
+                  "label": "Care & Repair (SV)",
+                  "url": "https://www.8848altitude.com/sv-SE/8848-altitude/hallbarhet/care-and-repair"
+                }
+              ]
+            }
+          ],
+          "buttonColor": "#065f46",
+          "buttonHoverColor": "#064e3b",
+          "contentBgColor": "#ecfdf5",
+          "id": "ExpandableCard-a5e307d0-3b89-4b80-9aff-b6152662bf34"
+        }
+      },
+      {
+        "type": "ExpandableCard",
+        "props": {
+          "items": [
+            {
+              "title": "Reparation, underhåll och återbruk",
+              "content": "Jackan är konstruerad med standardkomponenter som YKK‑dragkedjor, tryckknappar och utbytbara snoddar.",
+              "links": [
+                {
+                  "label": "Care & Repair (SV)",
+                  "url": "https://www.8848altitude.com/sv-SE/8848-altitude/hallbarhet/care-and-repair"
+                }
+              ]
+            }
+          ],
+          "buttonColor": "#065f46",
+          "buttonHoverColor": "#064e3b",
+          "contentBgColor": "#ecfdf5",
+          "id": "ExpandableCard-94990f4f-9a54-4fa2-b781-f23ba5015d8a"
+        }
+      },
+      {
+        "type": "ExpandableCard",
+        "props": {
+          "items": [
+            {
+              "title": "Reparation, underhåll och återbruk",
+              "content": "Jackan är konstruerad med standardkomponenter som YKK‑dragkedjor, tryckknappar och utbytbara snoddar.",
+              "links": [
+                {
+                  "label": "Care & Repair (SV)",
+                  "url": "https://www.8848altitude.com/sv-SE/8848-altitude/hallbarhet/care-and-repair"
+                }
+              ]
+            }
+          ],
+          "buttonColor": "#065f46",
+          "buttonHoverColor": "#064e3b",
+          "contentBgColor": "#ecfdf5",
+          "id": "ExpandableCard-d4621672-684f-4058-8570-1f9768c71e28"
+        }
+      },
+      {
+        "type": "ProductRecommendations",
+        "props": {
+          "heading": "Kompletera din look med",
+          "linkText": "See mer",
+          "linkUrl": "https://www.8848altitude.com/sv-SE/dam/skidklader/skidjackor",
+          "products": [
+            {
+              "productTitel": "Francias W Pant - Blanc",
+              "productCurrentPrice": 1299,
+              "productPrevPrice": 1799,
+              "colorOptions": [
+                { "color": "#000" },
+                { "color": "#fff" },
+                { "color": "#c8102e" }
+              ],
+              "productImageSrc": "/franciasPant.webp"
+            }
+          ],
+          "id": "ProductRecommendations-1458a27a-aa1e-4ab1-991d-016cd5960bc5"
+        }
+      },
+      {
+        "type": "CollectionSection",
+        "props": {
+          "title": "Ny kollektion - Stay Iconic",
+          "buttonText": "Shoppa",
+          "buttonUrl": "https://www.8848altitude.com/en/8848-magazine",
+          "bgColor": "#D4E9E2",
+          "mainImage": "/twoGirls.webp",
+          "overlayImage1": "/jackaiStudio.webp",
+          "overlayImage2": "/girl2.webp",
+          "id": "CollectionSection-a1916588-77d1-4130-979b-2486c4189796"
+        }
+      }
+    ],
+    "zones": {}
+  }
+}

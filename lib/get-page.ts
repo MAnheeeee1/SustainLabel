@@ -9,3 +9,15 @@ export const getPage = (path: string) => {
 
   return allData ? allData[path] : null;
 };
+export const getAllPages = (): { path: string; title: string }[] => {
+  const allData: Record<string, Data> | null = fs.existsSync("database.json")
+    ? JSON.parse(fs.readFileSync("database.json", "utf-8"))
+    : null;
+
+  if (!allData) return [];
+
+  return Object.entries(allData).map(([path, data]) => ({
+    path,
+    title: data.root?.props?.title || "Untitled",
+  }));
+};
