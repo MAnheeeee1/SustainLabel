@@ -24,6 +24,7 @@ export function Client({ path, data }: { path: string; data: Partial<Data> }) {
               <span style={{ fontSize: 14, fontWeight: 600, color: "#333" }}>
                 SustainLabel Editor
               </span>
+              <button>Preview‹</button>
             </div>
             {children}
           </>

@@ -1,48 +1,43 @@
-// app/dashboard/page.tsx
-import { getAllPages } from "../../lib/get-page";
-import Link from "next/link";
+import { AppSidebar } from "@/components/app-sidebar";
+import { SectionCards } from "@/components/section-cards";
+import { SiteHeader } from "@/components/site-header";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { Data } from "@puckeditor/core";
+import fs from "fs";
 
-export default function Dashboard() {
-  const pages = getAllPages(); // returns { path: string, title: string }[]
+function getAllPagesWithData(): { path: string; data: Data }[] {
+  const allData: Record<string, Data> | null = fs.existsSync("database.json")
+    ? JSON.parse(fs.readFileSync("database.json", "utf-8"))
+    : null;
 
-  return (
-    <div style={{ maxWidth: 800, margin: "0 auto", padding: 40 }}>
-      <h1>Dashboard</h1>
+  if (!allData) return [];
 
-      {/* Create new page */}
-      <form action="/dashboard/create" method="POST">
-        <input name="path" placeholder="/product/new-page" required />
-        <button type="submit">Create New Page</button>
-      </form>
-
-      {/* List existing pages */}
-      <h2>Published Pages</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Path</th>
-            <th>Title</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {pages.map((page) => (
-            <tr key={page.path}>
-              <td>{page.path}</td>
-              <td>{page.title}</td>
-              <td>
-                <Link href={page.path}>View</Link>
-                {" | "}
-                <Link href={`${page.path}/edit`}>Edit</Link>
-                {" | "}
-                <button>Delete</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
+  return Object.entries(allData).map(([path, data]) => ({ path, data }));
 }
 
-export const dynamic = "force-dynamic";
+export default function Page() {
+  const pages = getAllPagesWithData();
+
+  return (
+    <SidebarProvider
+      style={
+        {
+          "--sidebar-width": "calc(var(--spacing) * 72)",
+          "--header-height": "calc(var(--spacing) * 12)",
+        } as React.CSSProperties
+      }
+    >
+      <AppSidebar variant="inset" />
+      <SidebarInset>
+        <SiteHeader />
+        <div className="flex flex-1 flex-col">
+          <div className="@container/main flex flex-1 flex-col gap-2">
+            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+              <SectionCards pages={pages} />
+            </div>
+          </div>
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
+  );
+}
