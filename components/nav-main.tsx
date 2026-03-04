@@ -42,7 +42,7 @@ export function NavMain({
 
     const normalizedPath = path.startsWith("/") ? path : `/${path}`;
 
-    const res = await fetch("/api/puck", {
+    const res = await fetch("puck/api", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

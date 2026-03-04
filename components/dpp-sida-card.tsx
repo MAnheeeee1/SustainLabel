@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import type { Data } from "@pucditor/core";
+import type { Data } from "@puckeditor/core";
 import { Render } from "@puckeditor/core";
 import config from "../puck.config";
 import {

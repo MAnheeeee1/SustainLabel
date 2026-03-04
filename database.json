@@ -1,6 +1,8 @@
 {
   "/sara-jacket-8848": {
-    "root": { "props": {} },
+    "root": {
+      "props": {}
+    },
     "content": [
       {
         "type": "Heading",
@@ -23,6 +25,28 @@
         }
       },
       {
+        "type": "KeyMetric",
+        "props": {
+          "listofFacts": [
+            {
+              "keyFact": "100%",
+              "value": "Recycled"
+            },
+            {
+              "keyFact": "PFAS-free",
+              "value": "Impregnation"
+            },
+            {
+              "keyFact": "0.17kg",
+              "value": "CO₂ / transport"
+            }
+          ],
+          "bgColor": "#E2E2E2",
+          "accentColor": "text-green-800",
+          "id": "KeyMetric-5667723d-6129-4782-9705-d15ac2753d89"
+        }
+      },
+      {
         "type": "HeroSection",
         "props": {
           "imageUrl": "/jacka.png",
@@ -38,9 +62,18 @@
         "type": "KeyMetric",
         "props": {
           "listofFacts": [
-            { "keyFact": "100%", "value": "Recycled" },
-            { "keyFact": "123kg", "value": "Impregnation" },
-            { "keyFact": "0.17kg", "value": "CO₂ " }
+            {
+              "keyFact": "100%",
+              "value": "Recycled"
+            },
+            {
+              "keyFact": "123kg",
+              "value": "Impregnation"
+            },
+            {
+              "keyFact": "0.17kg",
+              "value": "CO₂ "
+            }
           ],
           "bgColor": "#E2E2E2",
           "accentColor": "text-green-800",
@@ -122,9 +155,15 @@
               "productCurrentPrice": 1299,
               "productPrevPrice": 1799,
               "colorOptions": [
-                { "color": "#000" },
-                { "color": "#fff" },
-                { "color": "#c8102e" }
+                {
+                  "color": "#000"
+                },
+                {
+                  "color": "#fff"
+                },
+                {
+                  "color": "#c8102e"
+                }
               ],
               "productImageSrc": "/franciasPant.webp"
             }
@@ -143,6 +182,51 @@
           "overlayImage1": "/jackaiStudio.webp",
           "overlayImage2": "/girl2.webp",
           "id": "CollectionSection-a1916588-77d1-4130-979b-2486c4189796"
+        }
+      }
+    ],
+    "zones": {}
+  },
+  "/anna-skor": {
+    "root": {
+      "props": {
+        "title": ""
+      }
+    },
+    "content": [
+      {
+        "type": "KeyMetric",
+        "props": {
+          "listofFacts": [
+            {
+              "keyFact": "100%",
+              "value": "Recycled"
+            },
+            {
+              "keyFact": "PFAS-free",
+              "value": "Impregnation"
+            },
+            {
+              "keyFact": "0.17kg",
+              "value": "CO₂ / transport"
+            }
+          ],
+          "bgColor": "#E2E2E2",
+          "accentColor": "text-green-800",
+          "id": "KeyMetric-0258233b-2dd3-44bc-8abc-ba21fb4af4f8"
+        }
+      },
+      {
+        "type": "CollectionSection",
+        "props": {
+          "title": "Ny kollektion - Stay Iconic",
+          "buttonText": "Shoppa",
+          "buttonUrl": "https://www.8848altitude.com/en/8848-magazine",
+          "bgColor": "#D4E9E2",
+          "mainImage": "/twoGirls.webp",
+          "overlayImage1": "/jackaiStudio.webp",
+          "overlayImage2": "/girl2.webp",
+          "id": "CollectionSection-ac40214b-9fcc-43bb-8bd8-587d16b99126"
         }
       }
     ],
