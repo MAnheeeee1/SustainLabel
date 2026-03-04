@@ -1,8 +1,6 @@
 {
   "/sara-jacket-8848": {
-    "root": {
-      "props": {}
-    },
+    "root": { "props": {} },
     "content": [
       {
         "type": "Heading",
@@ -40,18 +38,9 @@
         "type": "KeyMetric",
         "props": {
           "listofFacts": [
-            {
-              "keyFact": "100%",
-              "value": "Recycled"
-            },
-            {
-              "keyFact": "123kg",
-              "value": "Impregnation"
-            },
-            {
-              "keyFact": "0.17kg",
-              "value": "CO₂ "
-            }
+            { "keyFact": "100%", "value": "Recycled" },
+            { "keyFact": "123kg", "value": "Impregnation" },
+            { "keyFact": "0.17kg", "value": "CO₂ " }
           ],
           "bgColor": "#E2E2E2",
           "accentColor": "text-green-800",
@@ -133,15 +122,9 @@
               "productCurrentPrice": 1299,
               "productPrevPrice": 1799,
               "colorOptions": [
-                {
-                  "color": "#000"
-                },
-                {
-                  "color": "#fff"
-                },
-                {
-                  "color": "#c8102e"
-                }
+                { "color": "#000" },
+                { "color": "#fff" },
+                { "color": "#c8102e" }
               ],
               "productImageSrc": "/franciasPant.webp"
             }
@@ -164,60 +147,5 @@
       }
     ],
     "zones": {}
-  },
-  "/abdi": {
-    "root": {
-      "props": {}
-    },
-    "content": [
-      {
-        "type": "KeyMetric",
-        "props": {
-          "listofFacts": [
-            {
-              "keyFact": "100%",
-              "value": "Recycled"
-            },
-            {
-              "keyFact": "PFAS-free",
-              "value": "Impregnation"
-            },
-            {
-              "keyFact": "0.17kg",
-              "value": "CO₂ / transport"
-            }
-          ],
-          "bgColor": "#E2E2E2",
-          "accentColor": "text-green-800",
-          "id": "KeyMetric-1c0f7a5c-2b68-4d23-9f43-fcb9adb64ea0"
-        }
-      },
-      {
-        "type": "ExpandableCard",
-        "props": {
-          "items": [
-            {
-              "title": "Reparation, underhåll och återbruk",
-              "content": "Jackan är konstruerad med standardkomponenter som YKK‑dragkedjor, tryckknappar och utbytbara snoddar.",
-              "links": [
-                {
-                  "label": "Care & Repair (SV)",
-                  "url": "https://www.8848altitude.com/sv-SE/8848-altitude/hallbarhet/care-and-repair"
-                }
-              ]
-            }
-          ],
-          "buttonColor": "#065f46",
-          "buttonHoverColor": "#064e3b",
-          "contentBgColor": "#ecfdf5",
-          "id": "ExpandableCard-7141499c-dc40-4c7a-b6fe-001e660c6810"
-        }
-      }
-    ],
-    "zones": {}
-  },
-  "/aef": {
-    "content": [],
-    "root": {}
   }
 }
