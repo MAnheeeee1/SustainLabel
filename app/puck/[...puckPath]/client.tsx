@@ -32,7 +32,8 @@ export function Client({ path, data }: { path: string; data: Partial<Data> }) {
       }}
       onPublish={async (data) => {
         await fetch("/puck/api", {
-          method: "post",
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ data, path }),
         });
         window.location.href = "/dashboard";
