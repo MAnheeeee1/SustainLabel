@@ -7,8 +7,8 @@
       {
         "type": "Heading",
         "props": {
-          "title": "Heading",
-          "level": "h2",
+          "title": "Saga",
+          "level": "h1",
           "align": "left",
           "color": "#000000",
           "padding": "16px 24px",
@@ -22,28 +22,6 @@
           "thickness": "1px",
           "margin": "16px 0",
           "id": "Divider-24c54eec-c725-4aab-a042-4c376ce21c97"
-        }
-      },
-      {
-        "type": "KeyMetric",
-        "props": {
-          "listofFacts": [
-            {
-              "keyFact": "100%",
-              "value": "Recycled"
-            },
-            {
-              "keyFact": "PFAS-free",
-              "value": "Impregnation"
-            },
-            {
-              "keyFact": "0.17kg",
-              "value": "CO₂ / transport"
-            }
-          ],
-          "bgColor": "#E2E2E2",
-          "accentColor": "text-green-800",
-          "id": "KeyMetric-5667723d-6129-4782-9705-d15ac2753d89"
         }
       },
       {
