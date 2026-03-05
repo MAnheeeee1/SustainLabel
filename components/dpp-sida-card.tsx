@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import QRCodeDisplay from "./ui/qr-code";
 import type { Data } from "@puckeditor/core";
 import { Render } from "@puckeditor/core";
 import config from "../puck.config";
@@ -12,6 +13,7 @@ import {
   Eye,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import QRCode from "qrcode";
 
 interface DppCardProps {
   path: string;
@@ -21,6 +23,14 @@ interface DppCardProps {
 export function CardSmall({ path, data }: DppCardProps) {
   const title = data.root?.props?.title || path.replace(/^\//, "") || "Home";
   const displayUrl = `sustain-label.vercel.app${path}`;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  const downloadQR = async () => {
+    const url = await QRCode.toDataURL(`${baseUrl}/${path}`);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${path}-qr.png`;
+    link.click();
+  };
 
   return (
     <div className="w-full rounded-xl border bg-card shadow-sm transition-shadow hover:shadow-md">
@@ -94,6 +104,13 @@ export function CardSmall({ path, data }: DppCardProps) {
         >
           <Eye className="h-3 w-3" />
           Visa
+        </Link>
+        <Link
+          href={`#`}
+          onClick={downloadQR}
+          className="inline-flex items-center gap-1 rounded-md border bg-muted/50 px-2 py-0.5 text-xs font-medium hover:bg-muted"
+        >
+          Hämta Qr-Kod
         </Link>
       </div>
     </div>
