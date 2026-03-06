@@ -18,9 +18,10 @@ import { DropdownMenuHorisontal } from "../importedComponents/dropDownMenu";
 interface DppCardProps {
   path: string;
   data: Data;
+  onRefresh: () => void;
 }
 
-export function CardSmall({ path, data }: DppCardProps) {
+export function CardSmall({ path, data, onRefresh }: DppCardProps) {
   const title = data.root?.props?.title || path.replace(/^\//, "") || "Home";
   const displayUrl = `sustain-label.vercel.app${path}`;
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
@@ -56,7 +57,7 @@ export function CardSmall({ path, data }: DppCardProps) {
         <div className="flex shrink-0 items-center gap-2">
           <CheckCircle2 className="h-5 w-5 text-green-600" />
           <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
-            <DropdownMenuHorisontal path={path} />
+            <DropdownMenuHorisontal path={path} onDelete={onRefresh} />
           </Button>
         </div>
       </div>

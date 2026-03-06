@@ -1,22 +1,24 @@
+"use client";
+
 import { AppSidebar } from "@/components/app-sidebar";
 import { SectionCards } from "@/components/section-cards";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Data } from "@puckeditor/core";
-import fs from "fs";
-
-function getAllPagesWithData(): { path: string; data: Data }[] {
-  const allData: Record<string, Data> | null = fs.existsSync("database.json")
-    ? JSON.parse(fs.readFileSync("database.json", "utf-8"))
-    : null;
-
-  if (!allData) return [];
-
-  return Object.entries(allData).map(([path, data]) => ({ path, data }));
-}
+import { useState, useEffect, useCallback } from "react";
 
 export default function Page() {
-  const pages = getAllPagesWithData();
+  const [pages, setPages] = useState<{ path: string; data: Data }[]>([]);
+
+  const refreshPages = useCallback(async () => {
+    const res = await fetch("/api/pages");
+    const data = await res.json();
+    setPages(data);
+  }, []);
+
+  useEffect(() => {
+    refreshPages();
+  }, [refreshPages]);
 
   return (
     <SidebarProvider
@@ -33,7 +35,7 @@ export default function Page() {
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-              <SectionCards pages={pages} />
+              <SectionCards pages={pages} onRefresh={refreshPages} />
             </div>
           </div>
         </div>

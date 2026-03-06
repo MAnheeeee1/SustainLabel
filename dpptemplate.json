@@ -27,7 +27,7 @@
       {
         "type": "HeroSection",
         "props": {
-          "imageUrl": "[IMAGEURL-HEROSECTION]",
+          "imageUrl": "/public/jacka.png",
           "height": 400,
           "width": 300,
           "position": "center",

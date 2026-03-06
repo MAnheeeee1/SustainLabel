@@ -14,13 +14,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
-export function DropdownMenuHorisontal({ path }: { path: string }) {
+export function DropdownMenuHorisontal({
+  path,
+  onDelete,
+}: {
+  path: string;
+  onDelete?: () => void;
+}) {
   async function handleDelete() {
     await fetch("/puck/api", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ path }),
     });
+    onDelete?.();
   }
   return (
     <DropdownMenu>
