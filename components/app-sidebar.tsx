@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { IconDashboard, IconInnerShadowTop } from "@tabler/icons-react";
-
+import { IconAi } from "@tabler/icons-react";
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
 import {
@@ -26,6 +26,11 @@ const data = {
       title: "Dashboard",
       url: "/dashboard",
       icon: IconDashboard,
+    },
+    {
+      title: "Ai Generering",
+      url: "/dashboard/aigenerator",
+      icon: IconAi,
     },
   ],
 };

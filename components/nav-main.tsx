@@ -42,12 +42,39 @@ export function NavMain({
 
     const normalizedPath = path.startsWith("/") ? path : `/${path}`;
 
+    let templateData = { content: [], root: {} };
+    if (currentStep === 2 && designFromMall) {
+      // Fetch template from dpptemplate.json
+      const resTemplate = await fetch("/api/dpptemplate");
+      if (resTemplate.ok) {
+        const json = await resTemplate.json();
+        templateData = json["/template"] || templateData;
+        // Generate unique keys for each component
+        templateData = {
+          ...templateData,
+          content: templateData.content.map((item) => {
+            if (item.props && item.props.id) {
+              // Append a random string to the id
+              return {
+                ...item,
+                props: {
+                  ...item.props,
+                  id: `${item.props.id}-${Math.random().toString(36).substr(2, 9)}`,
+                },
+              };
+            }
+            return item;
+          }),
+        };
+      }
+    }
+
     const res = await fetch("puck/api", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         path: normalizedPath,
-        data: { content: [], root: {} },
+        data: templateData,
       }),
     });
 
@@ -57,7 +84,8 @@ export function NavMain({
       router.push(`${normalizedPath}/edit`);
     }
   }
-
+  const [currentStep, setCurrentStep] = useState(1);
+  const [designFromMall, setDesignFromMall] = useState(false);
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
@@ -74,26 +102,52 @@ export function NavMain({
                 </SidebarMenuButton>
               </DialogTrigger>
               <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Skapa en ny DPP-sida</DialogTitle>
-                  <DialogDescription>
-                    Ange namnet på projektet
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="path">Namn</Label>
-                    <Input
-                      id="path"
-                      placeholder="/my-product"
-                      value={path}
-                      onChange={(e) => setPath(e.target.value)}
-                    />
-                  </div>
-                </div>
-                <DialogFooter>
-                  <Button onClick={handleCreate}>Skapa</Button>
-                </DialogFooter>
+                {currentStep == 1 ? (
+                  <>
+                    <DialogHeader>
+                      <DialogTitle>Skapa en ny DPP-sida</DialogTitle>
+                    </DialogHeader>
+                    <button
+                      onClick={() => {
+                        setDesignFromMall(false);
+                        setCurrentStep(2);
+                      }}
+                    >
+                      Designa från grunden
+                    </button>
+                    <button
+                      onClick={() => {
+                        setDesignFromMall(true);
+                        setCurrentStep(2);
+                      }}
+                    >
+                      Designa från en Mall
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <DialogHeader>
+                      <DialogTitle>Skapa en ny DPP-sida</DialogTitle>
+                      <DialogDescription>
+                        Ange namnet på projektet
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="path">Namn</Label>
+                        <Input
+                          id="path"
+                          placeholder="/my-product"
+                          value={path}
+                          onChange={(e) => setPath(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button onClick={handleCreate}>Skapa</Button>
+                    </DialogFooter>
+                  </>
+                )}
               </DialogContent>
             </Dialog>
             <Button

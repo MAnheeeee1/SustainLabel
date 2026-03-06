@@ -3,14 +3,14 @@ import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
-  const { path } = await request.json();
+  const { path, data } = await request.json();
   const db = JSON.parse(fs.readFileSync("database.json", "utf-8") || "{}");
 
   if (db[path]) {
     return NextResponse.json({ error: "Page already exists" }, { status: 409 });
   }
 
-  db[path] = { content: [], root: { props: { title: "" } } };
+  db[path] = data || { content: [], root: { props: { title: "" } } };
   fs.writeFileSync("database.json", JSON.stringify(db));
 
   return NextResponse.json({ redirect: `/puck${path}` });

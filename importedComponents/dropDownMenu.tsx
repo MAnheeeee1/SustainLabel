@@ -30,10 +30,6 @@ export function DropdownMenuHorisontal({ path }: { path: string }) {
       <DropdownMenuContent className="w-40" align="start">
         <DropdownMenuGroup>
           <DropdownMenuLabel>Hantering</DropdownMenuLabel>
-          <DropdownMenuItem onClick={handleDelete}>
-            Ta Bort
-            <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-          </DropdownMenuItem>
           <DropdownMenuItem>
             Billing
             <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
@@ -43,6 +39,12 @@ export function DropdownMenuHorisontal({ path }: { path: string }) {
             <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuLabel>Farligt Område</DropdownMenuLabel>
+        <DropdownMenuItem onClick={handleDelete}>
+          Ta Bort
+          <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
