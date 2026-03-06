@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import QRCodeDisplay from "./ui/qr-code";
 import type { Data } from "@puckeditor/core";
 import { Render } from "@puckeditor/core";
+import { QrCode } from "lucide-react";
 import config from "../puck.config";
 import {
   MoreHorizontal,
