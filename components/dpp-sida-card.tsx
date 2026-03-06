@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import QRCode from "qrcode";
-
+import { DropdownMenuHorisontal } from "../importedComponents/dropDownMenu";
 interface DppCardProps {
   path: string;
   data: Data;
@@ -56,9 +56,7 @@ export function CardSmall({ path, data }: DppCardProps) {
         <div className="flex shrink-0 items-center gap-2">
           <CheckCircle2 className="h-5 w-5 text-green-600" />
           <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
-            <Link href={`/puck${path}`}>
-              <MoreHorizontal className="h-4 w-4" />
-            </Link>
+            <DropdownMenuHorisontal path={path} />
           </Button>
         </div>
       </div>
