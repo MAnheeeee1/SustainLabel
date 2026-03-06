@@ -3,6 +3,7 @@ import MoreProductSection from "./importedComponents/moreProductSection";
 import NewCollection from "./importedComponents/newCollection";
 import PopDownInfo from "./importedComponents/popDownInfo";
 import ProductImage from "./importedComponents/productImage";
+import MinimalFooter from "./importedComponents/minimalFooter";
 import ThreeKeyFacts from "./importedComponents/threeKeyFacts";
 type Props = {
   // DPP components
@@ -49,6 +50,11 @@ type Props = {
       colorOptions?: { color: string }[];
       productImageSrc: string;
     }[];
+  };
+  MinimalFooter: {
+    logoUrl: string;
+    copyWriteText: string;
+    align: string;
   };
   // General components
   Heading: {
@@ -109,6 +115,7 @@ export const config: Config<Props> = {
         "ExpandableCard",
         "CollectionSection",
         "ProductRecommendations",
+        "MinimalFooter",
       ],
     },
     General: {
@@ -125,6 +132,32 @@ export const config: Config<Props> = {
     },
   },
   components: {
+    MinimalFooter: {
+      fields: {
+        logoUrl: { type: "text" },
+        copyWriteText: { type: "text" },
+        align: {
+          type: "select",
+          options: [
+            { label: "Center", value: "center" },
+            { label: "Left", value: "left" },
+            { label: "Right", value: "right" },
+          ],
+        },
+      },
+      defaultProps: {
+        logoUrl: "/8848.png",
+        copyWriteText: "© 2026 All Right Reserved",
+        align: "center",
+      },
+      render: ({ logoUrl, copyWriteText, align }) => (
+        <MinimalFooter
+          logoUrl={logoUrl}
+          copyWriteText={copyWriteText}
+          align={align}
+        />
+      ),
+    },
     Grid: {
       render() {
         return (

@@ -161,6 +161,15 @@
           "overlayImage2": "/girl2.webp",
           "id": "CollectionSection-a1916588-77d1-4130-979b-2486c4189796"
         }
+      },
+      {
+        "type": "MinimalFooter",
+        "props": {
+          "logoUrl": "/8848.png",
+          "copyWriteText": "© 2026 All Right Reserved",
+          "align": "right",
+          "id": "MinimalFooter-13f5f913-ed1d-434a-a3e8-e4235e497df5"
+        }
       }
     ],
     "zones": {}
@@ -192,6 +201,28 @@
           "bgColor": "#E2E2E2",
           "accentColor": "text-green-800",
           "id": "KeyMetric-0258233b-2dd3-44bc-8abc-ba21fb4af4f8"
+        }
+      },
+      {
+        "type": "KeyMetric",
+        "props": {
+          "listofFacts": [
+            {
+              "keyFact": "100%",
+              "value": "Recycled"
+            },
+            {
+              "keyFact": "PFAS-free",
+              "value": "Impregnation"
+            },
+            {
+              "keyFact": "0.17kg",
+              "value": "CO₂ / transport"
+            }
+          ],
+          "bgColor": "#E2E2E2",
+          "accentColor": "text-green-800",
+          "id": "KeyMetric-9a8406f1-a3e7-4df4-a1d1-5eeb3e7b8e9b"
         }
       },
       {
