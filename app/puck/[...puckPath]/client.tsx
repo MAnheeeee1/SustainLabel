@@ -76,6 +76,12 @@ export function Client({ path, data }: { path: string; data: Partial<Data> }) {
                     >
                       Hämta Qr-Kod
                     </Link>
+                    <Link
+                      href={`${baseUrl}/dashboard`}
+                      className="inline-flex items-center gap-1 rounded-md border bg-muted/50 px-2 py-0.5 text-xs font-medium hover:bg-muted"
+                    >
+                      Till Dashboard
+                    </Link>
                   </DialogFooter>
                 </DialogContent>
               </Dialog>

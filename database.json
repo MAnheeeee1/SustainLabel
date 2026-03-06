@@ -209,5 +209,142 @@
       }
     ],
     "zones": {}
+  },
+  "/manh dao": {
+    "content": [],
+    "root": {
+      "props": {
+        "title": ""
+      }
+    }
+  },
+  "/manh%20dao": {
+    "root": {
+      "props": {}
+    },
+    "content": [
+      {
+        "type": "KeyMetric",
+        "props": {
+          "listofFacts": [
+            {
+              "keyFact": "100%",
+              "value": "Recycled"
+            },
+            {
+              "keyFact": "PFAS-free",
+              "value": "Impregnation"
+            },
+            {
+              "keyFact": "0.17kg",
+              "value": "CO₂ / transport"
+            }
+          ],
+          "bgColor": "#E2E2E2",
+          "accentColor": "text-green-800",
+          "id": "KeyMetric-d7845677-2274-4a2f-98f0-5397f3fd9513"
+        }
+      },
+      {
+        "type": "HeroSection",
+        "props": {
+          "imageUrl": "/jacka.png",
+          "height": 400,
+          "width": 300,
+          "position": "center",
+          "altText": "Produkt Photo",
+          "articleNumber": "Art nr 89349018",
+          "id": "HeroSection-cfc2ec35-307a-4589-8c82-0b69d4aaf8a0"
+        }
+      },
+      {
+        "type": "Heading",
+        "props": {
+          "title": "daoism",
+          "level": "h3",
+          "align": "center",
+          "color": "#000000",
+          "padding": "16px 24px",
+          "id": "Heading-2bf9d72e-677b-4afc-8ef3-e343fd951bc4"
+        }
+      },
+      {
+        "type": "CollectionSection",
+        "props": {
+          "title": "Ny kollektion - Stay Iconic",
+          "buttonText": "Shoppa",
+          "buttonUrl": "https://www.8848altitude.com/en/8848-magazine",
+          "bgColor": "#D4E9E2",
+          "mainImage": "/twoGirls.webp",
+          "overlayImage1": "/jackaiStudio.webp",
+          "overlayImage2": "/girl2.webp",
+          "id": "CollectionSection-b9b76bc8-0abc-41df-bb8e-3349952aeedb"
+        }
+      }
+    ],
+    "zones": {}
+  },
+  "/camiel l": {
+    "content": [],
+    "root": {
+      "props": {
+        "title": ""
+      }
+    }
+  },
+  "/camiel%20l": {
+    "root": {
+      "props": {}
+    },
+    "content": [
+      {
+        "type": "HeroSection",
+        "props": {
+          "imageUrl": "/jacka.png",
+          "height": 400,
+          "width": 300,
+          "position": "center",
+          "altText": "Produkt Photo",
+          "articleNumber": "Art nr 89349018",
+          "id": "HeroSection-23290c18-b9ee-461b-9072-32d0df6567bb"
+        }
+      },
+      {
+        "type": "Paragraph",
+        "props": {
+          "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam id felis et ipsum bibendum ultrices.",
+          "align": "left",
+          "color": "#333333",
+          "fontSize": "16px",
+          "maxWidth": "800px",
+          "padding": "16px 24px",
+          "id": "Paragraph-714b35f6-74ad-42fd-9ac9-8ebe119f7b56"
+        }
+      }
+    ],
+    "zones": {}
+  },
+  "/jskefjkasjef": {
+    "root": {
+      "props": {
+        "title": ""
+      }
+    },
+    "content": [
+      {
+        "type": "CollectionSection",
+        "props": {
+          "title": "Ny kollektion - Stay Iconic",
+          "buttonText": "Shoppa",
+          "buttonUrl": "https://www.8848altitude.com/en/8848-magazine",
+          "bgColor": "#D4E9E2",
+          "mainImage": "/twoGirls.webp",
+          "overlayImage1": "/jackaiStudio.webp",
+          "overlayImage2": "/girl2.webp",
+          "id": "CollectionSection-e3db5563-62c0-4569-b1ad-b5e3c6bafbba"
+        }
+      }
+    ],
+    "zones": {}
   }
 }
