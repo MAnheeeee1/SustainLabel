@@ -9,7 +9,7 @@ import {
   IconLayoutDashboard,
   type Icon,
 } from "@tabler/icons-react";
-
+import { IconRobotFace } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -122,7 +122,7 @@ export function NavMain({
                     <DialogHeader>
                       <DialogTitle>Skapa en ny DPP-sida</DialogTitle>
                     </DialogHeader>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-3 gap-3">
                       <button
                         onClick={() => {
                           setDesignFromMall(false);
@@ -142,6 +142,15 @@ export function NavMain({
                       >
                         <IconLayoutDashboard className="size-6 text-muted-foreground" />
                         Designa från en Mall
+                      </button>
+                      <button
+                        onClick={() => {
+                          router.push("/dashboard/aigenerator");
+                        }}
+                        className="flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-border p-6 text-sm font-medium transition hover:border-primary hover:bg-primary/5"
+                      >
+                        <IconRobotFace />
+                        Generea med AI
                       </button>
                     </div>
                   </>
@@ -184,9 +193,11 @@ export function NavMain({
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton tooltip={item.title}>
-                {item.icon && <item.icon />}
-                <span>{item.title}</span>
+              <SidebarMenuButton tooltip={item.title} asChild>
+                <a href={item.url}>
+                  {item.icon && <item.icon />}
+                  <span>{item.title}</span>
+                </a>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
