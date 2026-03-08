@@ -6,9 +6,8 @@ import { Highlighter } from "../components/ui/highlighter";
 import { AnimatedGradientText } from "../components/ui/animated-gradient-text";
 import { cn } from "../lib/utils";
 import { ChevronRight } from "lucide-react";
-import { MarqueeDemo } from "../components/company-test";
 import { SiteFooter } from "../components/site-footer";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Navbar,
   NavBody,
@@ -20,8 +19,10 @@ import {
   MobileNavToggle,
   MobileNavMenu,
 } from "@/components/ui/resizable-navbar";
-import { BentoGridHero } from "../components/hero-bento";
 import { SmoothCursor } from "../components/ui/smooth-cursor";
+import { BentoGridHero } from "../components/hero-bento";
+import { MarqueeDemo } from "../components/company-test";
+import { useScroll, useTransform, motion } from "motion/react";
 export default function Home() {
   const navItems = [
     {
@@ -37,6 +38,73 @@ export default function Home() {
       link: "#contact",
     },
   ];
+  const content = [
+    {
+      title: "Skapa på minuter",
+      description:
+        "Bygg ett komplett digitalt produktpass med vår intuitiva drag-and-drop-redigerare. Lägg till material, certifieringar, ursprungsland och hållbarhetsdata utan en enda kodrad.",
+      content: (
+        <div className="flex h-full w-full flex-col items-center justify-center gap-4 p-8 text-white">
+          <div className="text-6xl font-bold opacity-20">01</div>
+          <p className="text-center text-2xl font-semibold">
+            Drag-and-drop editor
+          </p>
+          <p className="text-center text-sm opacity-80">
+            Inga kodkunskaper krävs
+          </p>
+        </div>
+      ),
+    },
+    {
+      title: "Dela med en QR-kod",
+      description:
+        "Varje produktpass får en unik QR-kod som kunder skannar för att se hela produktens historia — material, tillverkare, certifieringar och miljöpåverkan i realtid.",
+      content: (
+        <div className="flex h-full w-full flex-col items-center justify-center gap-4 p-8 text-white">
+          <div className="text-6xl font-bold opacity-20">02</div>
+          <p className="text-center text-2xl font-semibold">Unik QR-kod</p>
+          <p className="text-center text-sm opacity-80">
+            Skannas direkt av kunden
+          </p>
+        </div>
+      ),
+    },
+    {
+      title: "Uppfyll EU-krav",
+      description:
+        "EU:s kommande krav på digitala produktpass (DPP) träder i kraft 2027. Med SustainLabel är du redan redo — vi håller din data strukturerad och uppdaterad enligt de senaste regelverken.",
+      content: (
+        <div className="flex h-full w-full flex-col items-center justify-center gap-4 p-8 text-white">
+          <div className="text-6xl font-bold opacity-20">03</div>
+          <p className="text-center text-2xl font-semibold">EU-kompatibel</p>
+          <p className="text-center text-sm opacity-80">
+            Redo för DPP-reglerna 2027
+          </p>
+        </div>
+      ),
+    },
+    {
+      title: "Bygg förtroende",
+      description:
+        "Konsumenter efterfrågar transparens. Visa upp äkta hållbarhetsdata, certifieringar och spårbarhet — och bygg ett varumärke som kunderna litar på och återkommer till.",
+      content: (
+        <div className="flex h-full w-full flex-col items-center justify-center gap-4 p-8 text-white">
+          <div className="text-6xl font-bold opacity-20">04</div>
+          <p className="text-center text-2xl font-semibold">
+            Transparent varumärke
+          </p>
+          <p className="text-center text-sm opacity-80">
+            Kunder som litar på dig köper igen
+          </p>
+        </div>
+      ),
+    },
+  ];
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollY } = useScroll();
+  const rotateX = useTransform(scrollY, [0, 400], [18, 0]);
+  const scale = useTransform(scrollY, [0, 400], [0.92, 1]);
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   return (
@@ -152,16 +220,33 @@ export default function Home() {
         </div>
 
         {/* Browser mockup */}
-        <div className="mt-16 w-full max-w-4xl">
-          <Safari
-            url="sustainlabel.se"
-            imageSrc="/herolanding.png"
-            className="w-full shadow-2xl"
-          />
+        <div
+          className="mt-16 w-full max-w-6xl"
+          style={{ perspective: "1200px" }}
+        >
+          <motion.div style={{ rotateX, scale, transformOrigin: "top center" }}>
+            <Safari
+              url="sustainlabel.se"
+              imageSrc="/herolanding.png"
+              className="w-full shadow-2xl"
+            />
+          </motion.div>
         </div>
-        <MarqueeDemo />
+      </div>
+      {/* Features section */}
+      <div className="w-full px-6 py-24">
+        <div className="mx-auto mb-16 max-w-2xl text-center">
+          <h2 className="text-5xl font-bold tracking-tight text-gray-900">
+            Allt du behöver, ingenting du inte behöver
+          </h2>
+          <p className="mt-5 text-xl text-gray-500">
+            En komplett plattform för digitala produktpass — från skapande till
+            delning.
+          </p>
+        </div>
         <BentoGridHero />
       </div>
+      <MarqueeDemo />
       <SiteFooter />
     </div>
   );

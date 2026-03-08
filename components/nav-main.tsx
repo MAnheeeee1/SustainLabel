@@ -2,7 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { IconCirclePlusFilled, IconMail, type Icon } from "@tabler/icons-react";
+import {
+  IconCirclePlusFilled,
+  IconMail,
+  IconPencil,
+  IconLayoutDashboard,
+  type Icon,
+} from "@tabler/icons-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -36,6 +42,15 @@ export function NavMain({
   const [path, setPath] = useState("");
   const [open, setOpen] = useState(false);
   const router = useRouter();
+
+  function handleOpenChange(value: boolean) {
+    setOpen(value);
+    if (!value) {
+      setCurrentStep(1);
+      setDesignFromMall(false);
+      setPath("");
+    }
+  }
 
   async function handleCreate() {
     if (!path.trim()) return;
@@ -91,7 +106,7 @@ export function NavMain({
       <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">
-            <Dialog open={open} onOpenChange={setOpen}>
+            <Dialog open={open} onOpenChange={handleOpenChange}>
               <DialogTrigger asChild>
                 <SidebarMenuButton
                   tooltip="Quick Create"
@@ -107,22 +122,28 @@ export function NavMain({
                     <DialogHeader>
                       <DialogTitle>Skapa en ny DPP-sida</DialogTitle>
                     </DialogHeader>
-                    <button
-                      onClick={() => {
-                        setDesignFromMall(false);
-                        setCurrentStep(2);
-                      }}
-                    >
-                      Designa från grunden
-                    </button>
-                    <button
-                      onClick={() => {
-                        setDesignFromMall(true);
-                        setCurrentStep(2);
-                      }}
-                    >
-                      Designa från en Mall
-                    </button>
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
+                        onClick={() => {
+                          setDesignFromMall(false);
+                          setCurrentStep(2);
+                        }}
+                        className="flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-border p-6 text-sm font-medium transition hover:border-primary hover:bg-primary/5"
+                      >
+                        <IconPencil className="size-6 text-muted-foreground" />
+                        Designa från grunden
+                      </button>
+                      <button
+                        onClick={() => {
+                          setDesignFromMall(true);
+                          setCurrentStep(2);
+                        }}
+                        className="flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-border p-6 text-sm font-medium transition hover:border-primary hover:bg-primary/5"
+                      >
+                        <IconLayoutDashboard className="size-6 text-muted-foreground" />
+                        Designa från en Mall
+                      </button>
+                    </div>
                   </>
                 ) : (
                   <>
