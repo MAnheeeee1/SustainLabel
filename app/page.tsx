@@ -233,6 +233,7 @@ export default function Home() {
           </motion.div>
         </div>
       </div>
+      <MarqueeDemo />
       {/* Features section */}
       <div className="w-full px-6 py-24">
         <div className="mx-auto mb-16 max-w-2xl text-center">
@@ -246,7 +247,7 @@ export default function Home() {
         </div>
         <BentoGridHero />
       </div>
-      <MarqueeDemo />
+      {/* Trusted by section */}
       <SiteFooter />
     </div>
   );
