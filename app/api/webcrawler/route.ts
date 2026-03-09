@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Firecrawl from "@mendable/firecrawl-js";
+import { writeFile, mkdir } from "fs/promises";
+import path from "path";
 
 export async function POST(req: NextRequest) {
   const firecrawl = new Firecrawl({ apiKey: process.env.FIRECRAWL_API_KEY });
@@ -22,9 +24,7 @@ export async function POST(req: NextRequest) {
       "/om-oss",
       "/about",
     ],
-    scrapeOptions: {
-      formats: ["markdown"],
-    },
+    scrapeOptions: { formats: ["markdown"] },
     excludePaths: ["/sale*", "/cart*", "/checkout*", "/account*"],
   });
 
@@ -37,5 +37,11 @@ export async function POST(req: NextRequest) {
     .join("\n\n---\n\n")
     .slice(0, 15000);
 
-  return NextResponse.json({ results: crawledText });
+  // Spara till uploads/
+  const uploadsDir = path.join(process.cwd(), "uploads");
+  await mkdir(uploadsDir, { recursive: true });
+  const filename = `crawl-${Date.now()}.txt`;
+  await writeFile(path.join(uploadsDir, filename), crawledText, "utf-8");
+
+  return NextResponse.json({ results: crawledText, filename });
 }
