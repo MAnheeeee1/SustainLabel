@@ -2,7 +2,7 @@
 
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { FileUpload } from "../../../components/ui/file-upload";
 import { Button } from "@/components/ui/button";
@@ -35,7 +35,9 @@ type ClassifiedResult = {
 
 export default function Page() {
   // ── Project step ────────────────────────────────────────────────
-  const [step, setStep] = useState<"project" | "main" | "question">("project");
+  const [step, setStep] = useState<
+    "project" | "main" | "loading" | "question" | "summary"
+  >("project");
   const [projectName, setProjectName] = useState("");
   const [projectId, setProjectId] = useState<string | null>(null);
   const [projectStatus, setProjectStatus] = useState<
@@ -82,6 +84,18 @@ export default function Page() {
       const data = await res.json();
       setProjectId(data.id);
       setProjectStatus("idle");
+      // Reset state from previous project
+      setVectorStoreId(null);
+      setClassfiedData({ result: null });
+      setFieldInputs({});
+      setFieldStatus({});
+      setExpandedFields({});
+      setUploadedFilenames([]);
+      setFiles([]);
+      setUploadStatus("idle");
+      setCrawlFilename(null);
+      setCrawlStatus("idle");
+      setIngestStatus("idle");
       setStep("main");
     } catch {
       setProjectStatus("error");
@@ -106,9 +120,7 @@ export default function Page() {
   const [ingestStatus, setIngestStatus] = useState<
     "idle" | "loading" | "done" | "error"
   >("idle");
-  const [vectorStoreId, setVectorStoreId] = useState<string | null>(
-    "vs_69afcdf1bdbc8191a2b27bbbd412f76e",
-  );
+  const [vectorStoreId, setVectorStoreId] = useState<string | null>(null);
 
   const handleFileUpload = (uploaded: File[]) => {
     setFiles(uploaded);
@@ -158,12 +170,21 @@ export default function Page() {
     }
   };
   const classifyData = async (storeId: string) => {
+    console.log("[frontend] calling classify with storeId:", storeId);
     const req = await fetch(`/api/rag/classify`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ vectorStoreId: storeId }),
     });
     const data = await req.json();
+    console.log(
+      "[frontend] classify response:",
+      JSON.stringify(data).slice(0, 500),
+    );
+    console.log(
+      "[frontend] result keys:",
+      data.result ? Object.keys(data.result) : "no result",
+    );
     return data;
   };
 
@@ -178,7 +199,7 @@ export default function Page() {
       const res = await fetch("/api/rag/ingest", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ filenames: allFilenames }),
+        body: JSON.stringify({ filenames: allFilenames, vectorStoreId }),
       });
       const data = await res.json();
       setVectorStoreId(data.vectorStoreId);
@@ -192,6 +213,7 @@ export default function Page() {
           body: JSON.stringify({ vectorStoreId: data.vectorStoreId }),
         });
       }
+      setStep("loading");
       const classfieddata = await classifyData(data.vectorStoreId);
       setClassfiedData(classfieddata);
       setStep("question");
@@ -201,6 +223,28 @@ export default function Page() {
   };
 
   const allFilesReady = uploadedFilenames.length > 0 || crawlFilename !== null;
+
+  // ── Rotating facts for loading screen ────────────────────────
+  const facts = [
+    "Ett digitalt produktpass (DPP) blir obligatoriskt inom EU från 2027.",
+    "Textilindustrin står för ca 10% av världens koldioxidutsläpp.",
+    "Att förlänga ett plaggs livslängd med 9 månader minskar dess klimatavtryck med ~30%.",
+    "Över 92 miljoner ton textilier hamnar på soptippen varje år.",
+    "Återvunnen polyester kräver 59% mindre energi än nyproducerad.",
+    "Bomullsodling använder 6% av världens bekämpningsmedel.",
+    "En genomsnittlig t-shirt kräver ca 2 700 liter vatten att producera.",
+    "EU:s gröna giv kräver spårbarhet genom hela leverantörskedjan.",
+    "Cirkulär design kan minska textilavfall med upp till 80%.",
+    "Transparens i leverantörskedjan ökar konsumenternas förtroende med 73%.",
+  ];
+  const [factIndex, setFactIndex] = useState(0);
+  useEffect(() => {
+    if (step !== "loading") return;
+    const interval = setInterval(() => {
+      setFactIndex((i) => (i + 1) % facts.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [step, facts.length]);
 
   return (
     <SidebarProvider
@@ -362,6 +406,26 @@ export default function Page() {
               </section>
             </>
           )}
+          {/* Loading screen with rotating facts */}
+          {step === "loading" && (
+            <div className="flex flex-1 flex-col items-center justify-center gap-8 py-24">
+              <div className="relative flex items-center justify-center">
+                <div className="h-12 w-12 animate-spin rounded-full border-4 border-neutral-200 border-t-green-500" />
+              </div>
+              <div className="flex flex-col items-center gap-3 text-center max-w-md">
+                <h2 className="text-lg font-semibold text-neutral-700 dark:text-neutral-200">
+                  Analyserar produktdata…
+                </h2>
+                <p className="text-sm text-neutral-400 transition-opacity duration-500">
+                  {facts[factIndex]}
+                </p>
+              </div>
+              <p className="text-xs text-neutral-300">
+                Detta kan ta upp till en minut
+              </p>
+            </div>
+          )}
+
           {step === "question" && (
             <>
               <p className="text-sm text-neutral-400 -mb-6">
@@ -372,66 +436,6 @@ export default function Page() {
               </p>
 
               <section className="flex flex-col gap-4">
-                {/* ── Completed fields ── */}
-                {classfiedData.result &&
-                  (() => {
-                    const allLabels: Record<string, string> = {
-                      productName: "Produktnamn",
-                      articleNumber: "Artikelnummer",
-                      totalTransportKm: "Total transportsträcka",
-                      totalCO2Kg: "CO₂-utsläpp",
-                      totalComponents: "Antal komponenter",
-                      repairAndMaintenance: "Reparation & underhåll",
-                      recyclingPotential: "Återvinningspotential",
-                      environmentalImpact: "Miljöpåverkan",
-                      socialResponsibility: "Socialt ansvar",
-                    };
-                    const doneEntries = (
-                      Object.entries(classfiedData.result!) as [
-                        string,
-                        unknown,
-                      ][]
-                    ).filter(
-                      ([, val]) =>
-                        val !== null &&
-                        val !== "" &&
-                        !(Array.isArray(val) && val.length === 0) &&
-                        typeof val !== "object",
-                    );
-                    if (doneEntries.length === 0) return null;
-                    return (
-                      <div className="flex flex-col gap-2">
-                        <p className="text-sm font-medium text-neutral-500">
-                          Hittad information
-                        </p>
-                        {doneEntries.map(([field, val]) => (
-                          <div
-                            key={field}
-                            className="rounded-lg border border-green-200 bg-green-50 px-4 py-2"
-                          >
-                            <button
-                              className="flex w-full items-center justify-between text-sm font-medium text-green-800"
-                              onClick={() => toggleExpand(field)}
-                            >
-                              <span className="flex items-center gap-2">
-                                <span className="text-green-500">✓</span>
-                                {allLabels[field] ?? field}
-                              </span>
-                              <span className="text-green-400 text-xs">
-                                {expandedFields[field] ? "▲ Dölj" : "▼ Visa"}
-                              </span>
-                            </button>
-                            {expandedFields[field] && (
-                              <p className="mt-2 text-sm text-green-700 wrap-break-word">
-                                {String(val)}
-                              </p>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    );
-                  })()}
-
                 {/* ── Missing fields ── */}
                 {classfiedData.result &&
                   (Object.entries(classfiedData.result) as [string, unknown][])
@@ -571,6 +575,55 @@ export default function Page() {
                         </Card>
                       );
                     })}
+              </section>
+
+              {/* Show continue button when all questions are handled */}
+              {classfiedData.result &&
+                (() => {
+                  const missingFields = (
+                    Object.entries(classfiedData.result!) as [string, unknown][]
+                  )
+                    .filter(
+                      ([, val]) =>
+                        val === null ||
+                        val === "" ||
+                        (Array.isArray(val) && val.length === 0),
+                    )
+                    .map(([field]) => field);
+                  const allHandled = missingFields.every(
+                    (f) =>
+                      fieldStatus[f] === "saved" ||
+                      fieldStatus[f] === "skipped",
+                  );
+                  if (!allHandled) return null;
+                  return (
+                    <Button
+                      className="mt-4 w-full max-w-xl"
+                      onClick={() => setStep("summary")}
+                    >
+                      Fortsätt till sammanfattning →
+                    </Button>
+                  );
+                })()}
+            </>
+          )}
+
+          {/* Step: Summary */}
+          {step === "summary" && (
+            <>
+              <section className="flex flex-col gap-6 w-full max-w-2xl">
+                <div>
+                  <h2 className="text-xl font-semibold">Sammanfattning</h2>
+                  <p className="text-sm text-neutral-500 mt-1">
+                    Granska all insamlad produktdata innan du publicerar.
+                  </p>
+                </div>
+                <pre className="rounded-lg border bg-neutral-50 p-4 text-xs text-neutral-700 overflow-x-auto max-h-[60vh] overflow-y-auto">
+                  {JSON.stringify(classfiedData.result, null, 2)}
+                </pre>
+                <Button className="w-full" size="lg">
+                  Publicera
+                </Button>
               </section>
             </>
           )}
