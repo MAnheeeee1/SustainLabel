@@ -46,5 +46,19 @@ export async function POST(req: NextRequest) {
     uploadedFileIds.push(createdFile.id);
   }
 
-  return NextResponse.json({ vectorStoreId, fileIds: uploadedFileIds });
+  // Poll until all files are processed before returning
+  let ready = false;
+  for (let i = 0; i < 30; i++) {
+    const fileList = await openai.vectorStores.files.list(vectorStoreId);
+    const allDone = fileList.data.every(
+      (f) => f.status === "completed" || f.status === "failed",
+    );
+    if (allDone) {
+      ready = true;
+      break;
+    }
+    await new Promise((r) => setTimeout(r, 2000));
+  }
+
+  return NextResponse.json({ vectorStoreId, fileIds: uploadedFileIds, ready });
 }

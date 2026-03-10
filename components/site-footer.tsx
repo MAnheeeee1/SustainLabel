@@ -56,35 +56,35 @@ export function SiteFooter() {
             <a
               href="#"
               aria-label="Twitter"
-              className="transition hover:text-gray-700"
+              className="transition-all duration-150 hover:text-gray-700 hover:rotate-12"
             >
               <Twitter className="h-5 w-5" />
             </a>
             <a
               href="#"
               aria-label="LinkedIn"
-              className="transition hover:text-gray-700"
+              className="transition-all duration-150 hover:text-gray-700 hover:-rotate-6"
             >
               <Linkedin className="h-5 w-5" />
             </a>
             <a
               href="#"
               aria-label="GitHub"
-              className="transition hover:text-gray-700"
+              className="transition-all duration-150 hover:text-gray-700 hover:rotate-3"
             >
               <Github className="h-5 w-5" />
             </a>
             <a
               href="#"
               aria-label="Facebook"
-              className="transition hover:text-gray-700"
+              className="transition-all duration-150 hover:text-gray-700 hover:-rotate-12"
             >
               <Facebook className="h-5 w-5" />
             </a>
             <a
               href="#"
               aria-label="Instagram"
-              className="transition hover:text-gray-700"
+              className="transition-all duration-150 hover:text-gray-700 hover:rotate-6"
             >
               <Instagram className="h-5 w-5" />
             </a>

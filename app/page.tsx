@@ -19,7 +19,6 @@ import {
   MobileNavToggle,
   MobileNavMenu,
 } from "@/components/ui/resizable-navbar";
-import { SmoothCursor } from "../components/ui/smooth-cursor";
 import { BentoGridHero } from "../components/hero-bento";
 import { MarqueeDemo } from "../components/company-test";
 import { useScroll, useTransform, motion } from "motion/react";
@@ -110,7 +109,6 @@ export default function Home() {
   return (
     <div className="landing-page relative min-h-screen w-screen overflow-hidden bg-white">
       <LightRays count={10} color="rgba(100, 200, 160, 0.15)" length="100vh" />
-      <SmoothCursor />
       <Navbar>
         {/* Desktop Navigation */}
         <NavBody>

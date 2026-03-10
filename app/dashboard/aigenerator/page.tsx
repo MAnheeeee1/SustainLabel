@@ -7,15 +7,67 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { FileUpload } from "../../../components/ui/file-upload";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { IconAlertCircle } from "@tabler/icons-react";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+
+type ClassifiedResult = {
+  result: {
+    productName: string | null;
+    articleNumber: string | null;
+    totalTransportKm: number | null;
+    totalCO2Kg: number | null;
+    totalComponents: number | null;
+    repairAndMaintenance: string | null;
+    recyclingPotential: string | null;
+    environmentalImpact: string | null;
+    socialResponsibility: string | null;
+  } | null;
+};
 
 export default function Page() {
   // ── Project step ────────────────────────────────────────────────
-  const [step, setStep] = useState<"project" | "main">("project");
+  const [step, setStep] = useState<"project" | "main" | "question">("project");
   const [projectName, setProjectName] = useState("");
   const [projectId, setProjectId] = useState<string | null>(null);
   const [projectStatus, setProjectStatus] = useState<
     "idle" | "saving" | "error"
   >("idle");
+  const [classfiedData, setClassfiedData] = useState<ClassifiedResult>({
+    result: null,
+  });
+  const [fieldInputs, setFieldInputs] = useState<Record<string, string>>({});
+  const [fieldStatus, setFieldStatus] = useState<
+    Record<string, "idle" | "saved" | "skipped">
+  >({});
+  const [expandedFields, setExpandedFields] = useState<Record<string, boolean>>(
+    {},
+  );
+
+  const toggleExpand = (field: string) =>
+    setExpandedFields((prev) => ({ ...prev, [field]: !prev[field] }));
+
+  const handleFieldSave = (field: string) => {
+    setClassfiedData((prev) => ({
+      ...prev,
+      result: prev.result
+        ? { ...prev.result, [field]: fieldInputs[field] ?? "" }
+        : prev.result,
+    }));
+    setFieldStatus((prev) => ({ ...prev, [field]: "saved" }));
+  };
+
+  const handleFieldSkip = (field: string) => {
+    setFieldStatus((prev) => ({ ...prev, [field]: "skipped" }));
+  };
 
   const handleCreateProject = async () => {
     if (!projectName.trim()) return;
@@ -54,7 +106,9 @@ export default function Page() {
   const [ingestStatus, setIngestStatus] = useState<
     "idle" | "loading" | "done" | "error"
   >("idle");
-  const [vectorStoreId, setVectorStoreId] = useState<string | null>(null);
+  const [vectorStoreId, setVectorStoreId] = useState<string | null>(
+    "vs_69afcdf1bdbc8191a2b27bbbd412f76e",
+  );
 
   const handleFileUpload = (uploaded: File[]) => {
     setFiles(uploaded);
@@ -103,6 +157,15 @@ export default function Page() {
       setCrawlStatus("error");
     }
   };
+  const classifyData = async (storeId: string) => {
+    const req = await fetch(`/api/rag/classify`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ vectorStoreId: storeId }),
+    });
+    const data = await req.json();
+    return data;
+  };
 
   const handleIngest = async () => {
     const allFilenames = [
@@ -129,6 +192,9 @@ export default function Page() {
           body: JSON.stringify({ vectorStoreId: data.vectorStoreId }),
         });
       }
+      const classfieddata = await classifyData(data.vectorStoreId);
+      setClassfiedData(classfieddata);
+      setStep("question");
     } catch {
       setIngestStatus("error");
     }
@@ -293,6 +359,218 @@ export default function Page() {
                     Något gick fel. Försök igen.
                   </span>
                 )}
+              </section>
+            </>
+          )}
+          {step === "question" && (
+            <>
+              <p className="text-sm text-neutral-400 -mb-6">
+                Projekt:{" "}
+                <span className="font-medium text-neutral-700 dark:text-neutral-300">
+                  {projectName}
+                </span>
+              </p>
+
+              <section className="flex flex-col gap-4">
+                {/* ── Completed fields ── */}
+                {classfiedData.result &&
+                  (() => {
+                    const allLabels: Record<string, string> = {
+                      productName: "Produktnamn",
+                      articleNumber: "Artikelnummer",
+                      totalTransportKm: "Total transportsträcka",
+                      totalCO2Kg: "CO₂-utsläpp",
+                      totalComponents: "Antal komponenter",
+                      repairAndMaintenance: "Reparation & underhåll",
+                      recyclingPotential: "Återvinningspotential",
+                      environmentalImpact: "Miljöpåverkan",
+                      socialResponsibility: "Socialt ansvar",
+                    };
+                    const doneEntries = (
+                      Object.entries(classfiedData.result!) as [
+                        string,
+                        unknown,
+                      ][]
+                    ).filter(
+                      ([, val]) =>
+                        val !== null &&
+                        val !== "" &&
+                        !(Array.isArray(val) && val.length === 0) &&
+                        typeof val !== "object",
+                    );
+                    if (doneEntries.length === 0) return null;
+                    return (
+                      <div className="flex flex-col gap-2">
+                        <p className="text-sm font-medium text-neutral-500">
+                          Hittad information
+                        </p>
+                        {doneEntries.map(([field, val]) => (
+                          <div
+                            key={field}
+                            className="rounded-lg border border-green-200 bg-green-50 px-4 py-2"
+                          >
+                            <button
+                              className="flex w-full items-center justify-between text-sm font-medium text-green-800"
+                              onClick={() => toggleExpand(field)}
+                            >
+                              <span className="flex items-center gap-2">
+                                <span className="text-green-500">✓</span>
+                                {allLabels[field] ?? field}
+                              </span>
+                              <span className="text-green-400 text-xs">
+                                {expandedFields[field] ? "▲ Dölj" : "▼ Visa"}
+                              </span>
+                            </button>
+                            {expandedFields[field] && (
+                              <p className="mt-2 text-sm text-green-700 wrap-break-word">
+                                {String(val)}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })()}
+
+                {/* ── Missing fields ── */}
+                {classfiedData.result &&
+                  (Object.entries(classfiedData.result) as [string, unknown][])
+                    .filter(
+                      ([, val]) =>
+                        val === null ||
+                        val === "" ||
+                        (Array.isArray(val) && val.length === 0),
+                    )
+                    .map(([field]) => {
+                      const labels: Record<
+                        string,
+                        {
+                          title: string;
+                          description: string;
+                          placeholder: string;
+                        }
+                      > = {
+                        productName: {
+                          title: "Produktnamn saknas",
+                          description: "Vad heter produkten?",
+                          placeholder: "T.ex. Arktis vinter-jacka",
+                        },
+                        articleNumber: {
+                          title: "Artikelnummer saknas",
+                          description: "Ange produktens artikelnummer.",
+                          placeholder: "T.ex. JKT-2026-001",
+                        },
+                        totalTransportKm: {
+                          title: "Transportsträcka saknas",
+                          description:
+                            "Hur långt transporterades produkten totalt (km)?",
+                          placeholder: "T.ex. 3500",
+                        },
+                        totalCO2Kg: {
+                          title: "CO₂-utsläpp saknas",
+                          description:
+                            "Vad är produktens totala CO₂-utsläpp (kg)?",
+                          placeholder: "T.ex. 0.17",
+                        },
+                        totalComponents: {
+                          title: "Antal komponenter saknas",
+                          description:
+                            "Hur många delar/komponenter ingår i produkten?",
+                          placeholder: "T.ex. 52",
+                        },
+                        repairAndMaintenance: {
+                          title: "Reparation & underhåll saknas",
+                          description:
+                            "Finns det reparations- eller underhållsinformation?",
+                          placeholder: "Beskriv möjligheter för reparation...",
+                        },
+                        recyclingPotential: {
+                          title: "Återvinningspotential saknas",
+                          description: "Kan produkten återvinnas? Om ja, hur?",
+                          placeholder:
+                            "T.ex. 90% polyester, fullt återvinningsbart",
+                        },
+                        environmentalImpact: {
+                          title: "Miljöpåverkan saknas",
+                          description: "Beskriv produktens miljöpåverkan.",
+                          placeholder:
+                            "T.ex. tillverkad med lågenergiprocess...",
+                        },
+                        socialResponsibility: {
+                          title: "Socialt ansvar saknas",
+                          description:
+                            "Finns det information om arbetsförhållanden?",
+                          placeholder: "T.ex. uppfyller SA8000-standarden...",
+                        },
+                      };
+                      const meta = labels[field] ?? {
+                        title: `${field} saknas`,
+                        description: "Ange information.",
+                        placeholder: "",
+                      };
+                      const status = fieldStatus[field] ?? "idle";
+                      return (
+                        <Card
+                          key={field}
+                          className={`w-full max-w-xl transition-opacity ${
+                            status === "skipped" ? "opacity-40" : "opacity-100"
+                          }`}
+                        >
+                          <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                              {status === "saved" ? (
+                                <span className="text-green-500">✓</span>
+                              ) : (
+                                <IconAlertCircle className="inline text-amber-500" />
+                              )}
+                              {status === "saved"
+                                ? meta.title.replace(" saknas", "")
+                                : meta.title}
+                            </CardTitle>
+                            <CardDescription>
+                              {meta.description}
+                            </CardDescription>
+                          </CardHeader>
+                          {status !== "saved" && (
+                            <CardContent>
+                              <div className="grid gap-2">
+                                <Label htmlFor={field}>{meta.title}</Label>
+                                <Input
+                                  id={field}
+                                  placeholder={meta.placeholder}
+                                  value={fieldInputs[field] ?? ""}
+                                  onChange={(e) =>
+                                    setFieldInputs((prev) => ({
+                                      ...prev,
+                                      [field]: e.target.value,
+                                    }))
+                                  }
+                                  disabled={status === "skipped"}
+                                />
+                              </div>
+                            </CardContent>
+                          )}
+                          {status === "idle" && (
+                            <CardFooter className="flex-col gap-2">
+                              <Button
+                                className="w-full"
+                                disabled={!fieldInputs[field]}
+                                onClick={() => handleFieldSave(field)}
+                              >
+                                Spara
+                              </Button>
+                              <Button
+                                variant="outline"
+                                className="w-full"
+                                onClick={() => handleFieldSkip(field)}
+                              >
+                                Hoppa över
+                              </Button>
+                            </CardFooter>
+                          )}
+                        </Card>
+                      );
+                    })}
               </section>
             </>
           )}
