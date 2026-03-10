@@ -86,6 +86,7 @@ export default function Page() {
       setProjectStatus("idle");
       // Reset state from previous project
       setVectorStoreId(null);
+      setFileIds([]);
       setClassfiedData({ result: null });
       setFieldInputs({});
       setFieldStatus({});
@@ -121,6 +122,7 @@ export default function Page() {
     "idle" | "loading" | "done" | "error"
   >("idle");
   const [vectorStoreId, setVectorStoreId] = useState<string | null>(null);
+  const [fileIds, setFileIds] = useState<string[]>([]);
 
   const handleFileUpload = (uploaded: File[]) => {
     setFiles(uploaded);
@@ -169,12 +171,17 @@ export default function Page() {
       setCrawlStatus("error");
     }
   };
-  const classifyData = async (storeId: string) => {
-    console.log("[frontend] calling classify with storeId:", storeId);
+  const classifyData = async (storeId: string, fIds: string[]) => {
+    console.log(
+      "[frontend] calling classify with storeId:",
+      storeId,
+      "fileIds:",
+      fIds.length,
+    );
     const req = await fetch(`/api/rag/classify`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ vectorStoreId: storeId }),
+      body: JSON.stringify({ vectorStoreId: storeId, fileIds: fIds }),
     });
     const data = await req.json();
     console.log(
@@ -203,6 +210,7 @@ export default function Page() {
       });
       const data = await res.json();
       setVectorStoreId(data.vectorStoreId);
+      setFileIds(data.fileIds ?? []);
       setIngestStatus("done");
 
       // Save vectorStoreId back to the project
@@ -214,7 +222,10 @@ export default function Page() {
         });
       }
       setStep("loading");
-      const classfieddata = await classifyData(data.vectorStoreId);
+      const classfieddata = await classifyData(
+        data.vectorStoreId,
+        data.fileIds ?? [],
+      );
       setClassfiedData(classfieddata);
       setStep("question");
     } catch {
