@@ -12,8 +12,9 @@ export default function Page() {
 
   const refreshPages = useCallback(async () => {
     const res = await fetch("/api/pages");
+    if (!res.ok) return;
     const data = await res.json();
-    setPages(data);
+    setPages(Array.isArray(data) ? data : []);
   }, []);
 
   useEffect(() => {

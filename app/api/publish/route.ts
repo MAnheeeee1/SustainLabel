@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { readFile, writeFile } from "fs/promises";
+import { readFile } from "fs/promises";
 import path from "path";
 import { randomUUID } from "crypto";
+import { createClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
 
 function slugify(name: string): string {
   return name
@@ -34,6 +36,15 @@ function formatMaterials(
 }
 
 export async function POST(req: NextRequest) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const { projectName, result } = await req.json();
 
   if (!projectName || !result) {
@@ -43,12 +54,9 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Load template and database
+  // Load template from local JSON file
   const templatePath = path.join(process.cwd(), "dpptemplate.json");
-  const dbPath = path.join(process.cwd(), "database.json");
-
   const template = JSON.parse(await readFile(templatePath, "utf-8"));
-  const db = JSON.parse(await readFile(dbPath, "utf-8").catch(() => "{}"));
 
   // Deep-clone the template page data
   const pageData = JSON.parse(JSON.stringify(template["/template"]));
@@ -136,9 +144,21 @@ export async function POST(req: NextRequest) {
   const slug = slugify(projectName);
   const pagePath = `/${slug}`;
 
-  // Save to database (overwrite if exists)
-  db[pagePath] = pageData;
-  await writeFile(dbPath, JSON.stringify(db, null, 2), "utf-8");
+  // Upsert into Supabase
+  const { error } = await supabase.from("dpp_pages").upsert(
+    {
+      user_id: user.id,
+      slug,
+      name: result.productName ?? projectName,
+      content: pageData,
+    },
+    { onConflict: "user_id,slug" },
+  );
 
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  revalidatePath(pagePath);
   return NextResponse.json({ path: pagePath, editPath: `/puck${pagePath}` });
 }

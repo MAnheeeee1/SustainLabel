@@ -84,7 +84,7 @@ export function NavMain({
       }
     }
 
-    const res = await fetch("puck/api", {
+    const res = await fetch("/puck/api", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

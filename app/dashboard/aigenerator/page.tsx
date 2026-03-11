@@ -705,7 +705,7 @@ export default function Page() {
                         <a href={publishedPagePath!}>Visa sida →</a>
                       </Button>
                       <Button size="lg" className="flex-1" asChild>
-                        <a href={`${publishedSlug}/edit`}>
+                        <a href={`${publishedPagePath}/edit`}>
                           Redigera i editor →
                         </a>
                       </Button>

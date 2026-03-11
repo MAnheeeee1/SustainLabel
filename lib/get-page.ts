@@ -1,26 +1,34 @@
 import { Data } from "@puckeditor/core";
+import { createClient } from "@/lib/supabase/server";
 import fs from "fs";
 
-// Replace with call to your database
-export const getPage = (path: string) => {
-  const allData: Record<string, Data> | null = fs.existsSync("database.json")
-    ? JSON.parse(fs.readFileSync("database.json", "utf-8"))
-    : null;
-
-  return allData ? allData[path] : null;
+// Fetch a single DPP page by its URL path (e.g. "/my-product")
+// Public: uses the anon key; RLS allows SELECT for everyone.
+export const getPage = async (path: string): Promise<Data | null> => {
+  const slug = path.replace(/^\//, "");
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("dpp_pages")
+    .select("content")
+    .eq("slug", slug)
+    .single();
+  return (data?.content as Data) ?? null;
 };
-export const getAllPages = (): { path: string; title: string }[] => {
-  const allData: Record<string, Data> | null = fs.existsSync("database.json")
-    ? JSON.parse(fs.readFileSync("database.json", "utf-8"))
-    : null;
 
-  if (!allData) return [];
-
-  return Object.entries(allData).map(([path, data]) => ({
-    path,
-    title: data.root?.props?.title || "Untitled",
+// Fetch all pages (used by sitemap / static generation)
+export const getAllPages = async (): Promise<
+  { path: string; title: string }[]
+> => {
+  const supabase = await createClient();
+  const { data } = await supabase.from("dpp_pages").select("slug, content");
+  if (!data) return [];
+  return data.map((row) => ({
+    path: `/${row.slug}`,
+    title: (row.content as Data)?.root?.props?.title || "Untitled",
   }));
 };
+
+// Fetch the DPP template from the local JSON file (unchanged)
 export const getTemplatePage = () => {
   const allData: Record<string, Data> | null = fs.existsSync("dpptemplate.json")
     ? JSON.parse(fs.readFileSync("dpptemplate.json", "utf-8"))
