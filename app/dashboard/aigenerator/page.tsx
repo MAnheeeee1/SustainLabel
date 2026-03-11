@@ -53,6 +53,14 @@ export default function Page() {
   const [expandedFields, setExpandedFields] = useState<Record<string, boolean>>(
     {},
   );
+  const [publishStatus, setPublishStatus] = useState<
+    "idle" | "loading" | "done" | "error"
+  >("idle");
+  const [publishedSlug, setPublishedSlug] = useState<string | null>(null);
+  const [publishedPagePath, setPublishedPagePath] = useState<string | null>(
+    null,
+  );
+  const [publishError, setPublishError] = useState<string | null>(null);
 
   const toggleExpand = (field: string) =>
     setExpandedFields((prev) => ({ ...prev, [field]: !prev[field] }));
@@ -227,7 +235,15 @@ export default function Page() {
         data.fileIds ?? [],
       );
       setClassfiedData(classfieddata);
-      setStep("question");
+
+      // Skip question step if all fields are filled
+      const result = classfieddata?.result;
+      const hasMissingFields =
+        result &&
+        Object.values(result).some(
+          (v) => v === null || v === "" || (Array.isArray(v) && v.length === 0),
+        );
+      setStep(hasMissingFields ? "question" : "summary");
     } catch {
       setIngestStatus("error");
     }
@@ -632,9 +648,70 @@ export default function Page() {
                 <pre className="rounded-lg border bg-neutral-50 p-4 text-xs text-neutral-700 overflow-x-auto max-h-[60vh] overflow-y-auto">
                   {JSON.stringify(classfiedData.result, null, 2)}
                 </pre>
-                <Button className="w-full" size="lg">
-                  Publicera
-                </Button>
+                {publishStatus !== "done" ? (
+                  <>
+                    {publishError && (
+                      <p className="text-sm text-red-500">{publishError}</p>
+                    )}
+                    <Button
+                      className="w-full"
+                      size="lg"
+                      disabled={publishStatus === "loading"}
+                      onClick={async () => {
+                        setPublishStatus("loading");
+                        setPublishError(null);
+                        try {
+                          const res = await fetch("/api/publish", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              projectName,
+                              result: classfiedData.result,
+                            }),
+                          });
+                          if (!res.ok) {
+                            const err = await res.json().catch(() => ({}));
+                            throw new Error(err.error ?? `Fel ${res.status}`);
+                          }
+                          const { path, editPath } = await res.json();
+                          setPublishedPagePath(path);
+                          setPublishedSlug(editPath);
+                          setPublishStatus("done");
+                        } catch (e: unknown) {
+                          setPublishError(
+                            e instanceof Error ? e.message : "Okänt fel",
+                          );
+                          setPublishStatus("error");
+                        }
+                      }}
+                    >
+                      {publishStatus === "loading"
+                        ? "Publicerar…"
+                        : "Publicera"}
+                    </Button>
+                  </>
+                ) : (
+                  <div className="flex flex-col gap-3">
+                    <p className="text-sm text-green-600 font-medium">
+                      ✓ Produktpasset har publicerats!
+                    </p>
+                    <div className="flex gap-3">
+                      <Button
+                        variant="outline"
+                        size="lg"
+                        className="flex-1"
+                        asChild
+                      >
+                        <a href={publishedPagePath!}>Visa sida →</a>
+                      </Button>
+                      <Button size="lg" className="flex-1" asChild>
+                        <a href={`${publishedSlug}/edit`}>
+                          Redigera i editor →
+                        </a>
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </section>
             </>
           )}
