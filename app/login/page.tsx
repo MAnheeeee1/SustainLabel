@@ -15,7 +15,6 @@ function LoginForm() {
   );
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [emailSent, setEmailSent] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -29,8 +28,6 @@ function LoginForm() {
 
       if (result?.error) {
         setError(result.error);
-      } else if ("success" in result && result.success) {
-        setEmailSent(true);
       }
     } catch (err) {
       // Re-throw Next.js redirect errors so navigation works
@@ -56,92 +53,68 @@ function LoginForm() {
             <span className="text-xl font-semibold">SustainLabel</span>
           </div>
           <h1 className="text-2xl font-bold">
-            {emailSent
-              ? "Bekräfta din e-post"
-              : mode === "login"
-                ? "Logga in"
-                : "Skapa konto"}
+            {mode === "login" ? "Logga in" : "Skapa konto"}
           </h1>
           <p className="text-sm text-muted-foreground">
-            {emailSent
-              ? "Vi har skickat ett bekräftelsemail. Klicka på länken i mailet för att aktivera ditt konto."
-              : mode === "login"
-                ? "Fyll i dina uppgifter för att fortsätta"
-                : "Registrera dig för att komma igång"}
+            {mode === "login"
+              ? "Fyll i dina uppgifter för att fortsätta"
+              : "Registrera dig för att komma igång"}
           </p>
         </div>
 
-        {/* Email confirmation state */}
-        {emailSent ? (
-          <p className="text-center text-sm text-muted-foreground">
-            Inget mail?{" "}
-            <button
-              type="button"
-              onClick={() => setEmailSent(false)}
-              className="font-medium underline underline-offset-4 hover:text-foreground"
-            >
-              Försök igen
-            </button>
-          </p>
-        ) : (
-          <>
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">E-post</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="namn@example.com"
-                  required
-                  autoComplete="email"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Lösenord</Label>
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  placeholder="••••••••"
-                  required
-                  autoComplete={
-                    mode === "login" ? "current-password" : "new-password"
-                  }
-                  minLength={6}
-                />
-              </div>
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="email">E-post</Label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="namn@example.com"
+              required
+              autoComplete="email"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="password">Lösenord</Label>
+            <Input
+              id="password"
+              name="password"
+              type="password"
+              placeholder="••••••••"
+              required
+              autoComplete={
+                mode === "login" ? "current-password" : "new-password"
+              }
+              minLength={6}
+            />
+          </div>
 
-              {error && <p className="text-sm text-destructive">{error}</p>}
+          {error && <p className="text-sm text-destructive">{error}</p>}
 
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading
-                  ? "Väntar…"
-                  : mode === "login"
-                    ? "Logga in"
-                    : "Skapa konto"}
-              </Button>
-            </form>
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading
+              ? "Väntar…"
+              : mode === "login"
+                ? "Logga in"
+                : "Skapa konto"}
+          </Button>
+        </form>
 
-            {/* Toggle */}
-            <p className="text-center text-sm text-muted-foreground">
-              {mode === "login"
-                ? "Har du inget konto?"
-                : "Har du redan ett konto?"}{" "}
-              <button
-                type="button"
-                onClick={() => {
-                  setMode(mode === "login" ? "signup" : "login");
-                  setError(null);
-                }}
-                className="font-medium underline underline-offset-4 hover:text-foreground"
-              >
-                {mode === "login" ? "Registrera dig" : "Logga in"}
-              </button>
-            </p>
-          </>
-        )}
+        {/* Toggle */}
+        <p className="text-center text-sm text-muted-foreground">
+          {mode === "login" ? "Har du inget konto?" : "Har du redan ett konto?"}{" "}
+          <button
+            type="button"
+            onClick={() => {
+              setMode(mode === "login" ? "signup" : "login");
+              setError(null);
+            }}
+            className="font-medium underline underline-offset-4 hover:text-foreground"
+          >
+            {mode === "login" ? "Registrera dig" : "Logga in"}
+          </button>
+        </p>
       </div>
     </div>
   );
