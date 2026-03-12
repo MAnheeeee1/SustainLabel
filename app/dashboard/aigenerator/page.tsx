@@ -260,9 +260,9 @@ export default function Page() {
     setAnalyzeError(null);
     setStep("loading");
 
-    let savedFilenames: string[] = [];
+    let uploadedIds: string[] = [];
 
-    // Step 1: Upload files (if any)
+    // Step 1: Upload files directly to OpenAI (if any)
     if (files.length > 0) {
       const formData = new FormData();
       files.forEach((file) => formData.append("files", file));
@@ -273,16 +273,17 @@ export default function Page() {
         });
         if (!res.ok) throw new Error("upload");
         const data = await res.json();
-        savedFilenames = data.saved;
+        uploadedIds = data.openaiFileIds ?? [];
       } catch {
         setAnalyzeStatus("error");
         setAnalyzeError("Uppladdning misslyckades. Försök igen.");
+        setStep("main");
         return;
       }
     }
 
-    // Step 2: Crawl URL (if provided)
-    let crawledFile: string | null = null;
+    // Step 2: Crawl URL and upload result directly to OpenAI (if provided)
+    let crawledFileId: string | null = null;
     if (targetUrl.trim()) {
       setAnalyzeStatus("crawling");
       try {
@@ -292,32 +293,32 @@ export default function Page() {
           body: JSON.stringify({ targetUrl: targetUrl.trim() }),
         });
         const data = await res.json();
-        if (data.filename) {
-          crawledFile = data.filename;
+        if (data.openaiFileId) {
+          crawledFileId = data.openaiFileId;
         }
       } catch {
         // Non-fatal — continue without crawl data
       }
     }
 
-    const allFilenames = [
-      ...savedFilenames,
-      ...(crawledFile ? [crawledFile] : []),
+    const allFileIds = [
+      ...uploadedIds,
+      ...(crawledFileId ? [crawledFileId] : []),
     ];
-    if (allFilenames.length === 0) {
+    if (allFileIds.length === 0) {
       setAnalyzeStatus("error");
       setAnalyzeError("Lägg till minst en fil eller en URL.");
       setStep("main");
       return;
     }
 
-    // Step 3: Ingest
+    // Step 3: Ingest (add already-uploaded OpenAI files to vector store)
     setAnalyzeStatus("ingesting");
     try {
       const resIngest = await fetch("/api/rag/ingest", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ filenames: allFilenames, vectorStoreId }),
+        body: JSON.stringify({ openaiFileIds: allFileIds, vectorStoreId }),
       });
       const ingestData = await resIngest.json();
       setVectorStoreId(ingestData.vectorStoreId);

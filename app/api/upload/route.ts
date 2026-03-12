@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import Firecrawl from "@mendable/firecrawl-js";
+import OpenAI, { toFile } from "openai";
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 const PARSEABLE_EXTENSIONS = [
   ".pdf",
@@ -21,11 +23,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "No files provided" }, { status: 400 });
   }
 
-  const uploadsDir = path.join(process.cwd(), "uploads");
-  await mkdir(uploadsDir, { recursive: true });
-
   const firecrawl = new Firecrawl({ apiKey: process.env.FIRECRAWL_API_KEY });
-  const savedFiles: string[] = [];
+  const openaiFileIds: string[] = [];
 
   for (const file of files) {
     const ext = path.extname(file.name).toLowerCase();
@@ -33,8 +32,6 @@ export async function POST(req: NextRequest) {
     const timestamp = Date.now();
 
     if (PARSEABLE_EXTENSIONS.includes(ext)) {
-      // Save raw file temporarily so Firecrawl can receive it as a URL
-      // Firecrawl scrape() accepts a data URI for local files via base64
       const bytes = await file.arrayBuffer();
       const base64 = Buffer.from(bytes).toString("base64");
       const mimeMap: Record<string, string> = {
@@ -50,8 +47,11 @@ export async function POST(req: NextRequest) {
       };
       const mimeType = mimeMap[ext] ?? "application/octet-stream";
 
+      let uploadBuffer: Buffer;
+      let uploadFilename: string;
+
       try {
-        // Firecrawl supports data URIs for document parsing
+        // Parse with Firecrawl and upload the resulting markdown to OpenAI
         const dataUri = `data:${mimeType};base64,${base64}`;
         const result = await firecrawl.scrape(dataUri, {
           formats: ["markdown"],
@@ -59,35 +59,44 @@ export async function POST(req: NextRequest) {
             ? { parsers: [{ type: "pdf" as const, mode: "auto" as const }] }
             : {}),
         });
-
         const markdown = (result as any)?.markdown ?? "";
-        const filename = `${timestamp}-${safeBasename}.md`;
-        await writeFile(path.join(uploadsDir, filename), markdown, "utf-8");
-        savedFiles.push(filename);
+        uploadBuffer = Buffer.from(markdown, "utf-8");
+        uploadFilename = `${timestamp}-${safeBasename}.md`;
         console.log(
-          `[upload] parsed ${file.name} → ${filename} (${markdown.length} chars)`,
+          `[upload] parsed ${file.name} → markdown (${markdown.length} chars)`,
         );
       } catch (err) {
-        // Fallback: save raw file if Firecrawl fails
+        // Fallback: upload the raw file bytes if Firecrawl fails
         console.warn(
-          `[upload] Firecrawl parsing failed for ${file.name}, saving raw:`,
+          `[upload] Firecrawl parsing failed for ${file.name}, uploading raw:`,
           err,
         );
-        const filename = `${timestamp}-${safeBasename}`;
-        await writeFile(
-          path.join(uploadsDir, filename),
-          new Uint8Array(await file.arrayBuffer()),
-        );
-        savedFiles.push(filename);
+        uploadBuffer = Buffer.from(bytes);
+        uploadFilename = `${timestamp}-${safeBasename}`;
       }
+
+      const uploadable = await toFile(uploadBuffer, uploadFilename, {
+        type: "text/plain",
+      });
+      const created = await openai.files.create({
+        file: uploadable,
+        purpose: "assistants",
+      });
+      openaiFileIds.push(created.id);
     } else {
-      // Plain text files (.txt, .csv etc.) — save as-is
+      // Plain text / CSV — upload directly to OpenAI
       const bytes = await file.arrayBuffer();
-      const filename = `${timestamp}-${safeBasename}`;
-      await writeFile(path.join(uploadsDir, filename), new Uint8Array(bytes));
-      savedFiles.push(filename);
+      const uploadable = await toFile(
+        Buffer.from(bytes),
+        `${timestamp}-${safeBasename}`,
+      );
+      const created = await openai.files.create({
+        file: uploadable,
+        purpose: "assistants",
+      });
+      openaiFileIds.push(created.id);
     }
   }
 
-  return NextResponse.json({ saved: savedFiles });
+  return NextResponse.json({ openaiFileIds });
 }

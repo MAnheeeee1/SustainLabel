@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import Firecrawl from "@mendable/firecrawl-js";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
+import OpenAI, { toFile } from "openai";
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export async function POST(req: NextRequest) {
   const firecrawl = new Firecrawl({ apiKey: process.env.FIRECRAWL_API_KEY });
@@ -37,11 +38,14 @@ export async function POST(req: NextRequest) {
     .join("\n\n---\n\n")
     .slice(0, 15000);
 
-  // Spara till uploads/
-  const uploadsDir = path.join(process.cwd(), "uploads");
-  await mkdir(uploadsDir, { recursive: true });
+  // Upload crawled text directly to OpenAI (no local disk write)
   const filename = `crawl-${Date.now()}.txt`;
-  await writeFile(path.join(uploadsDir, filename), crawledText, "utf-8");
+  const buffer = Buffer.from(crawledText, "utf-8");
+  const uploadable = await toFile(buffer, filename, { type: "text/plain" });
+  const created = await openai.files.create({
+    file: uploadable,
+    purpose: "assistants",
+  });
 
-  return NextResponse.json({ results: crawledText, filename });
+  return NextResponse.json({ results: crawledText, openaiFileId: created.id });
 }

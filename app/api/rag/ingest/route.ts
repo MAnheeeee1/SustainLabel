@@ -1,16 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { readFile } from "fs/promises";
-import path from "path";
-import OpenAI, { toFile } from "openai";
+import OpenAI from "openai";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export async function POST(req: NextRequest) {
-  const { filenames, vectorStoreId: existingStoreId } = await req.json();
+  const { openaiFileIds, vectorStoreId: existingStoreId } = await req.json();
 
-  if (!filenames || filenames.length === 0) {
+  if (!openaiFileIds || openaiFileIds.length === 0) {
     return NextResponse.json(
-      { error: "filenames array is required" },
+      { error: "openaiFileIds array is required" },
       { status: 400 },
     );
   }
@@ -24,26 +22,11 @@ export async function POST(req: NextRequest) {
     vectorStoreId = store.id;
   }
 
-  const uploadsDir = path.join(process.cwd(), "uploads");
-  const uploadedFileIds: string[] = [];
-
-  for (const filename of filenames) {
-    if (filename.includes("/") || filename.includes("..")) {
-      return NextResponse.json(
-        { error: `Invalid filename: ${filename}` },
-        { status: 400 },
-      );
-    }
-    const buffer = await readFile(path.join(uploadsDir, filename));
-    const uploadable = await toFile(buffer, filename);
-    const createdFile = await openai.files.create({
-      file: uploadable,
-      purpose: "assistants",
-    });
+  // Add already-uploaded OpenAI files to the vector store
+  for (const fileId of openaiFileIds) {
     await openai.vectorStores.files.create(vectorStoreId, {
-      file_id: createdFile.id,
+      file_id: fileId,
     });
-    uploadedFileIds.push(createdFile.id);
   }
 
   // Poll the vector store object until file_counts shows all files processed
@@ -67,5 +50,5 @@ export async function POST(req: NextRequest) {
     await new Promise((r) => setTimeout(r, 5000));
   }
 
-  return NextResponse.json({ vectorStoreId, fileIds: uploadedFileIds, ready });
+  return NextResponse.json({ vectorStoreId, fileIds: openaiFileIds, ready });
 }
