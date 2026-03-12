@@ -37,13 +37,15 @@ export function DropdownMenuHorisontal({
       <DropdownMenuContent className="w-40" align="start">
         <DropdownMenuGroup>
           <DropdownMenuLabel>Hantering</DropdownMenuLabel>
-          <DropdownMenuItem>
-            Billing
-            <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
+          <DropdownMenuItem
+            onClick={() => (window.location.href = `${path}/edit`)}
+          >
+            Redigera
+            <DropdownMenuShortcut>⌘E</DropdownMenuShortcut>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            Settings
-            <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+          <DropdownMenuItem onClick={() => (window.location.href = path)}>
+            Visa
+            <DropdownMenuShortcut>⌘V</DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />

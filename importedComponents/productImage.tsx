@@ -25,9 +25,18 @@ const ProductImage = ({
     divClassName = "flex justify-end items-center";
   }
   divClassName += " relative py-10";
+
+  // Guard against invalid/incomplete URLs the AI may generate
+  const isValidSrc =
+    typeof imageUrl === "string" &&
+    (imageUrl.startsWith("/") ||
+      imageUrl.startsWith("http://") ||
+      imageUrl.startsWith("https://"));
+  const safeSrc = isValidSrc ? imageUrl : "/placeholder.png";
+
   return (
     <div className={divClassName}>
-      <Image alt={altText} src={imageUrl} height={height} width={width} />
+      <Image alt={altText} src={safeSrc} height={height} width={width} />
       {articleNumber && (
         <p className="absolute bottom-12 right-18">{articleNumber}</p>
       )}

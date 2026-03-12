@@ -28,14 +28,6 @@ export default function Home() {
       name: "Features",
       link: "#features",
     },
-    {
-      name: "Pris",
-      link: "#pricing",
-    },
-    {
-      name: "Kontakt",
-      link: "#contact",
-    },
   ];
   const content = [
     {
@@ -115,8 +107,12 @@ export default function Home() {
           <NavbarLogo />
           <NavItems items={navItems} />
           <div className="flex items-center gap-4">
-            <NavbarButton variant="secondary">Login</NavbarButton>
-            <NavbarButton variant="primary">Kom Igång</NavbarButton>
+            <NavbarButton href="/login" variant="secondary">
+              Login
+            </NavbarButton>
+            <NavbarButton href="/login?signup=true" variant="primary">
+              Kom Igång
+            </NavbarButton>
           </div>
         </NavBody>
 

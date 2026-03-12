@@ -249,6 +249,110 @@ export default function Page() {
     }
   };
 
+  // ── Combined handler: save files → crawl (optional) → ingest → classify ──
+  const [analyzeStatus, setAnalyzeStatus] = useState<
+    "idle" | "uploading" | "crawling" | "ingesting" | "classifying" | "error"
+  >("idle");
+  const [analyzeError, setAnalyzeError] = useState<string | null>(null);
+
+  const handleAnalyze = async () => {
+    setAnalyzeStatus("uploading");
+    setAnalyzeError(null);
+    setStep("loading");
+
+    let savedFilenames: string[] = [];
+
+    // Step 1: Upload files (if any)
+    if (files.length > 0) {
+      const formData = new FormData();
+      files.forEach((file) => formData.append("files", file));
+      try {
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+        if (!res.ok) throw new Error("upload");
+        const data = await res.json();
+        savedFilenames = data.saved;
+      } catch {
+        setAnalyzeStatus("error");
+        setAnalyzeError("Uppladdning misslyckades. Försök igen.");
+        return;
+      }
+    }
+
+    // Step 2: Crawl URL (if provided)
+    let crawledFile: string | null = null;
+    if (targetUrl.trim()) {
+      setAnalyzeStatus("crawling");
+      try {
+        const res = await fetch("/api/webcrawler", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ targetUrl: targetUrl.trim() }),
+        });
+        const data = await res.json();
+        if (data.filename) {
+          crawledFile = data.filename;
+        }
+      } catch {
+        // Non-fatal — continue without crawl data
+      }
+    }
+
+    const allFilenames = [
+      ...savedFilenames,
+      ...(crawledFile ? [crawledFile] : []),
+    ];
+    if (allFilenames.length === 0) {
+      setAnalyzeStatus("error");
+      setAnalyzeError("Lägg till minst en fil eller en URL.");
+      setStep("main");
+      return;
+    }
+
+    // Step 3: Ingest
+    setAnalyzeStatus("ingesting");
+    try {
+      const resIngest = await fetch("/api/rag/ingest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ filenames: allFilenames, vectorStoreId }),
+      });
+      const ingestData = await resIngest.json();
+      setVectorStoreId(ingestData.vectorStoreId);
+      setFileIds(ingestData.fileIds ?? []);
+
+      if (projectId) {
+        await fetch(`/api/projects/${projectId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ vectorStoreId: ingestData.vectorStoreId }),
+        });
+      }
+
+      // Step 4: Classify
+      setAnalyzeStatus("classifying");
+      const classified = await classifyData(
+        ingestData.vectorStoreId,
+        ingestData.fileIds ?? [],
+      );
+      setClassfiedData(classified);
+
+      const result = classified?.result;
+      const hasMissingFields =
+        result &&
+        Object.values(result).some(
+          (v) => v === null || v === "" || (Array.isArray(v) && v.length === 0),
+        );
+      setStep(hasMissingFields ? "question" : "summary");
+    } catch {
+      setAnalyzeStatus("error");
+      setAnalyzeError("Analysen misslyckades. Försök igen.");
+      setStep("main");
+    }
+  };
+
   const allFilesReady = uploadedFilenames.length > 0 || crawlFilename !== null;
 
   // ── Rotating facts for loading screen ────────────────────────
@@ -272,6 +376,39 @@ export default function Page() {
     }, 4000);
     return () => clearInterval(interval);
   }, [step, facts.length]);
+
+  const loadingHeading =
+    analyzeStatus === "uploading"
+      ? "Laddar upp filer…"
+      : analyzeStatus === "crawling"
+        ? "Hämtar data från hemsidan…"
+        : analyzeStatus === "ingesting"
+          ? "Bygger kunskapsbas…"
+          : analyzeStatus === "classifying"
+            ? "Analyserar produktdata…"
+            : "Bearbetar…";
+
+  // Build ordered steps based on what the user provided
+  const hasFiles = files.length > 0;
+  const hasUrl = targetUrl.trim().length > 0;
+  type AnalyzePhase = "uploading" | "crawling" | "ingesting" | "classifying";
+  const loadingSteps: { key: AnalyzePhase; label: string }[] = [
+    ...(hasFiles
+      ? [{ key: "uploading" as AnalyzePhase, label: "Laddar upp filer" }]
+      : []),
+    ...(hasUrl
+      ? [{ key: "crawling" as AnalyzePhase, label: "Hämtar hemsida" }]
+      : []),
+    { key: "ingesting", label: "Bygger kunskapsbas" },
+    { key: "classifying", label: "Analyserar" },
+  ];
+  const currentStepIndex = loadingSteps.findIndex(
+    (s) => s.key === analyzeStatus,
+  );
+  const progressPct =
+    loadingSteps.length === 0
+      ? 0
+      : Math.round(((currentStepIndex + 1) / loadingSteps.length) * 100);
 
   return (
     <SidebarProvider
@@ -330,106 +467,59 @@ export default function Page() {
                 </span>
               </p>
 
-              <section className="flex flex-col gap-4">
-                <h2 className="text-xl font-semibold">
-                  1. Ladda upp produktdata
-                </h2>
-                <p className="text-sm text-neutral-500">
-                  Ladda upp specifikationsblad, materiallista eller annan
-                  produktdokumentation.
-                </p>
+              <section className="flex flex-col gap-6">
+                <div>
+                  <h2 className="text-xl font-semibold">
+                    Lägg till produktdata
+                  </h2>
+                  <p className="text-sm text-neutral-500 mt-1">
+                    Ladda upp produktdokument och/eller klistra in en webbadress
+                    — vi analyserar allt automatiskt.
+                  </p>
+                </div>
+
+                {/* File upload */}
                 <div className="border border-dashed border-neutral-300 rounded-xl bg-neutral-50">
                   <FileUpload onChange={handleFileUpload} />
                 </div>
-                <div className="flex items-center gap-3">
-                  <Button
-                    onClick={handleSave}
-                    disabled={files.length === 0 || uploadStatus === "saving"}
-                    variant="outline"
-                  >
-                    {uploadStatus === "saving"
-                      ? "Laddar upp..."
-                      : "Ladda upp filer"}
-                  </Button>
-                  {uploadStatus === "saved" && (
-                    <span className="text-sm text-green-600">
-                      ✓ {uploadedFilenames.length} fil
-                      {uploadedFilenames.length !== 1 ? "er" : ""} uppladdad
-                    </span>
-                  )}
-                  {uploadStatus === "error" && (
-                    <span className="text-sm text-red-500">
-                      Uppladdning misslyckades.
-                    </span>
-                  )}
-                </div>
-              </section>
+                {files.length > 0 && (
+                  <p className="text-sm text-neutral-500 -mt-2">
+                    {files.length} fil{files.length !== 1 ? "er" : ""} valda
+                  </p>
+                )}
 
-              {/* Steg 2: Crawla webbplats */}
-              <section className="flex flex-col gap-4">
-                <h2 className="text-xl font-semibold">
-                  2. Hämta information från webbplats{" "}
-                  <span className="text-neutral-400 font-normal text-sm">
-                    (valfritt)
-                  </span>
-                </h2>
-                <p className="text-sm text-neutral-500">
-                  Klistra in en URL för att automatiskt hämta
-                  hållbarhetsinformation från webbplatsen.
-                </p>
-                <div className="flex gap-3">
+                {/* Optional URL */}
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                    Webbadress{" "}
+                    <span className="font-normal text-neutral-400">
+                      (valfritt)
+                    </span>
+                  </label>
                   <Input
                     placeholder="https://www.example.com"
                     value={targetUrl}
                     onChange={(e) => setTargetUrl(e.target.value)}
-                    className="flex-1"
                   />
-                  <Button
-                    onClick={handleCrawl}
-                    disabled={!targetUrl || crawlStatus === "loading"}
-                    variant="outline"
-                  >
-                    {crawlStatus === "loading" ? "Hämtar..." : "Hämta"}
-                  </Button>
                 </div>
-                {crawlStatus === "done" && (
-                  <span className="text-sm text-green-600">
-                    ✓ Webbplatsdata hämtad och sparad
-                  </span>
-                )}
-                {crawlStatus === "error" && (
-                  <span className="text-sm text-red-500">
-                    Misslyckades. Kontrollera URL:en.
-                  </span>
-                )}
-              </section>
 
-              {/* Steg 3: Bygg kunskapsbas */}
-              <section className="flex flex-col gap-4">
-                <h2 className="text-xl font-semibold">3. Bygg kunskapsbas</h2>
-                <p className="text-sm text-neutral-500">
-                  Ladda upp all insamlad data till AI:ns kunskapsbas (vector
-                  store).
-                </p>
+                {analyzeError && (
+                  <p className="text-sm text-red-500">{analyzeError}</p>
+                )}
+
                 <Button
-                  onClick={handleIngest}
-                  disabled={!allFilesReady || ingestStatus === "loading"}
+                  onClick={handleAnalyze}
+                  disabled={
+                    (files.length === 0 && !targetUrl.trim()) ||
+                    analyzeStatus === "uploading" ||
+                    analyzeStatus === "crawling" ||
+                    analyzeStatus === "ingesting" ||
+                    analyzeStatus === "classifying"
+                  }
                   className="w-fit"
                 >
-                  {ingestStatus === "loading"
-                    ? "Bygger kunskapsbas..."
-                    : "Bygg kunskapsbas"}
+                  Analysera →
                 </Button>
-                {ingestStatus === "done" && (
-                  <span className="text-sm text-green-600">
-                    ✓ Kunskapsbas klar — ID: {vectorStoreId}
-                  </span>
-                )}
-                {ingestStatus === "error" && (
-                  <span className="text-sm text-red-500">
-                    Något gick fel. Försök igen.
-                  </span>
-                )}
               </section>
             </>
           )}
@@ -439,14 +529,44 @@ export default function Page() {
               <div className="relative flex items-center justify-center">
                 <div className="h-12 w-12 animate-spin rounded-full border-4 border-neutral-200 border-t-green-500" />
               </div>
-              <div className="flex flex-col items-center gap-3 text-center max-w-md">
-                <h2 className="text-lg font-semibold text-neutral-700 dark:text-neutral-200">
-                  Analyserar produktdata…
+
+              <div className="flex flex-col items-center gap-3 text-center max-w-md w-full">
+                <h2 className="text-lg font-semibold text-neutral-700 dark:text-neutral-200 transition-all duration-500">
+                  {loadingHeading}
                 </h2>
                 <p className="text-sm text-neutral-400 transition-opacity duration-500">
                   {facts[factIndex]}
                 </p>
               </div>
+
+              {/* Progress bar */}
+              <div className="w-full max-w-md flex flex-col gap-3">
+                <div className="h-2 w-full rounded-full bg-neutral-200 overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-green-500 transition-all duration-700 ease-in-out"
+                    style={{ width: `${progressPct}%` }}
+                  />
+                </div>
+                {/* Step labels */}
+                <div className="flex justify-between">
+                  {loadingSteps.map((s, i) => (
+                    <span
+                      key={s.key}
+                      className={`text-xs transition-colors duration-300 ${
+                        i < currentStepIndex
+                          ? "text-green-500 font-medium"
+                          : i === currentStepIndex
+                            ? "text-neutral-700 dark:text-neutral-200 font-semibold"
+                            : "text-neutral-300"
+                      }`}
+                    >
+                      {i < currentStepIndex ? "✓ " : ""}
+                      {s.label}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
               <p className="text-xs text-neutral-300">
                 Detta kan ta upp till en minut
               </p>
