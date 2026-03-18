@@ -17,6 +17,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useState } from "react";
+import { normalizePuckData } from "@/lib/puck-normalize";
 
 export function Client({ path, data }: { path: string; data: Partial<Data> }) {
   const [open, setOpen] = useState(false);
@@ -91,10 +92,11 @@ export function Client({ path, data }: { path: string; data: Partial<Data> }) {
         ),
       }}
       onPublish={async (data) => {
+        const normalizedData = normalizePuckData(data);
         await fetch("/puck/api", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ data, path }),
+          body: JSON.stringify({ data: normalizedData, path }),
         });
         setOpen(true);
         //window.location.href = "/dashboard";

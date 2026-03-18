@@ -4,6 +4,7 @@ import path from "path";
 import { randomUUID } from "crypto";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { normalizePuckData } from "@/lib/puck-normalize";
 
 function slugify(name: string): string {
   return name
@@ -59,7 +60,9 @@ export async function POST(req: NextRequest) {
   const template = JSON.parse(await readFile(templatePath, "utf-8"));
 
   // Deep-clone the template page data
-  const pageData = JSON.parse(JSON.stringify(template["/template"]));
+  const pageData = normalizePuckData(
+    JSON.parse(JSON.stringify(template["/template"])),
+  );
 
   const materialsText = formatMaterials(result.materials);
 
@@ -87,8 +90,8 @@ export async function POST(req: NextRequest) {
         break;
 
       case "KeyMetric":
-        if (Array.isArray(p.listofFacts)) {
-          p.listofFacts = p.listofFacts.map(
+        if (Array.isArray(p.listOfFacts)) {
+          p.listOfFacts = p.listOfFacts.map(
             (fact: { keyFact: string; value: string }) => {
               if (fact.keyFact === "[TOTAL-TRANSPORT-STÄCKA]")
                 return {

@@ -39,7 +39,7 @@
       {
         "type": "KeyMetric",
         "props": {
-          "listofFacts": [
+          "listOfFacts": [
             {
               "keyFact": "[TOTAL-TRANSPORT-STÄCKA]",
               "value": "Sträcka"
@@ -53,7 +53,7 @@
               "value": "Delar"
             }
           ],
-          "bgColor": "#E2E2E2",
+          "backgroundColor": "#E2E2E2",
           "accentColor": "text-green-800",
           "id": "KeyMetric-6ffcb19b-92cf-4ca1-936e-522cacf30928"
         }
@@ -75,7 +75,7 @@
           ],
           "buttonColor": "#065f46",
           "buttonHoverColor": "#064e3b",
-          "contentBgColor": "#ecfdf5",
+          "contentBackgroundColor": "#ecfdf5",
           "id": "ExpandableCard-a5e307d0-3b89-4b80-9aff-b6152662bf34"
         }
       },
@@ -96,7 +96,7 @@
           ],
           "buttonColor": "#065f46",
           "buttonHoverColor": "#064e3b",
-          "contentBgColor": "#ecfdf5",
+          "contentBackgroundColor": "#ecfdf5",
           "id": "ExpandableCard-94990f4f-9a54-4fa2-b781-f23ba5015d8a"
         }
       },
@@ -117,7 +117,7 @@
           ],
           "buttonColor": "#065f46",
           "buttonHoverColor": "#064e3b",
-          "contentBgColor": "#ecfdf5",
+          "contentBackgroundColor": "#ecfdf5",
           "id": "ExpandableCard-d4621672-684f-4058-8570-1f9768c71e28"
         }
       },
@@ -138,7 +138,7 @@
           ],
           "buttonColor": "#065f46",
           "buttonHoverColor": "#064e3b",
-          "contentBgColor": "#ecfdf5",
+          "contentBackgroundColor": "#ecfdf5",
           "id": "ExpandableCard-d4621672-684f-4018-8570-1f9798c71e28"
         }
       },
@@ -159,7 +159,7 @@
           ],
           "buttonColor": "#065f46",
           "buttonHoverColor": "#064e3b",
-          "contentBgColor": "#ecfdf5",
+          "contentBackgroundColor": "#ecfdf5",
           "id": "ExpandableCard-d4621672-684f-4018-8570-1f9798c71e28"
         }
       },
@@ -172,7 +172,7 @@
           "linkUrl": "https://www.8848altitude.com/sv-SE/dam/skidklader/skidjackor",
           "products": [
             {
-              "productTitel": "Francias W Pant - Blanc",
+              "productTitle": "Francias W Pant - Blanc",
               "productCurrentPrice": 1299,
               "productPrevPrice": 1799,
               "colorOptions": [
@@ -198,7 +198,7 @@
           "title": "Ny kollektion - Stay Iconic",
           "buttonText": "Shoppa",
           "buttonUrl": "https://www.8848altitude.com/en/8848-magazine",
-          "bgColor": "#D4E9E2",
+          "backgroundColor": "#D4E9E2",
           "mainImage": "/twoGirls.webp",
           "overlayImage1": "/jackaiStudio.webp",
           "overlayImage2": "/girl2.webp",
@@ -209,8 +209,10 @@
         "type": "MinimalFooter",
         "props": {
           "logoUrl": "/8848.png",
-          "copyWriteText": "© 2026 All Right Reserved",
+          "copyrightText": "© 2026 All Right Reserved",
           "align": "right",
+          "logoWidth": 60,
+          "logoHeight": 20,
           "id": "MinimalFooter-13f5f913-ed1d-434a-a3e8-e4235e497df5"
         }
       }

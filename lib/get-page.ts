@@ -1,6 +1,7 @@
 import { Data } from "@puckeditor/core";
 import { createClient } from "@/lib/supabase/server";
 import fs from "fs";
+import { normalizePuckData } from "@/lib/puck-normalize";
 
 // Fetch a single DPP page by its URL path (e.g. "/my-product")
 // Public: uses the anon key; RLS allows SELECT for everyone.
@@ -12,7 +13,7 @@ export const getPage = async (path: string): Promise<Data | null> => {
     .select("content")
     .eq("slug", slug)
     .single();
-  return (data?.content as Data) ?? null;
+  return normalizePuckData((data?.content as Data) ?? null);
 };
 
 // Fetch all pages (used by sitemap / static generation)

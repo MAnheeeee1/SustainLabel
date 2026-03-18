@@ -7,7 +7,7 @@ type MoreProductSectionProps = {
   linkText?: string;
   linkUrl?: string;
   products?: {
-    productTitel: string;
+    productTitle: string;
     productCurrentPrice: number;
     productPrevPrice?: number;
     colorOptions?: string[];

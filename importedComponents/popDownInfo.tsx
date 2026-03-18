@@ -16,7 +16,7 @@ type PopDownInfoProps = {
   items?: DropdownItem[];
   buttonColor?: string;
   buttonHoverColor?: string;
-  contentBgColor?: string;
+  contentBackgroundColor?: string;
 };
 
 const defaultItems: DropdownItem[] = [
@@ -121,7 +121,7 @@ const DropdownModule = ({
   items,
   buttonColor = "#065f46",
   buttonHoverColor = "#064e3b",
-  contentBgColor = "#ecfdf5",
+  contentBackgroundColor = "#ecfdf5",
 }: PopDownInfoProps) => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const toggleDropdown = ({ index }: { index: number }) => {
@@ -156,7 +156,7 @@ const DropdownModule = ({
             className={`transition-all duration-300 ease-in-out overflow-hidden ${
               activeIndex === index ? "max-h-[600px] py-6 px-6" : "max-h-0"
             }`}
-            style={{ backgroundColor: contentBgColor }}
+            style={{ backgroundColor: contentBackgroundColor }}
           >
             {item.content.split("\n\n").map((paragraph, i) => (
               <p

@@ -8,7 +8,7 @@ import MoreProductSection from "./moreProductSection";
 import NewCollection from "./newCollection";
 import Head from "next/head";
 export default function DppTemplate() {
-  const listofFacts = [
+  const listOfFacts = [
     { keyFact: "8600mil", value: "Sträcka" },
     { keyFact: "0.17kg", value: "Co2" },
     { keyFact: "52", value: "Delar" },
@@ -25,7 +25,7 @@ export default function DppTemplate() {
             width={300}
             position={"center"}
           />
-          <ThreeKeyFacts listofFacts={listofFacts} />
+          <ThreeKeyFacts listOfFacts={listOfFacts} />
 
           <DropdownModule />
           <MoreProductSection />

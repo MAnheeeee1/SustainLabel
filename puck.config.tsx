@@ -16,8 +16,8 @@ type Props = {
     articleNumber: string;
   };
   KeyMetric: {
-    listofFacts: { keyFact: string; value: string }[];
-    bgColor: string;
+    listOfFacts: { keyFact: string; value: string }[];
+    backgroundColor: string;
     accentColor: string;
   };
   ExpandableCard: {
@@ -28,13 +28,13 @@ type Props = {
     }[];
     buttonColor: string;
     buttonHoverColor: string;
-    contentBgColor: string;
+    contentBackgroundColor: string;
   };
   CollectionSection: {
     title: string;
     buttonText: string;
     buttonUrl: string;
-    bgColor: string;
+    backgroundColor: string;
     mainImage: string;
     overlayImage1: string;
     overlayImage2: string;
@@ -44,7 +44,7 @@ type Props = {
     linkText: string;
     linkUrl: string;
     products: {
-      productTitel: string;
+      productTitle: string;
       productCurrentPrice: number;
       productPrevPrice?: number;
       colorOptions?: { color: string }[];
@@ -53,18 +53,20 @@ type Props = {
   };
   MinimalFooter: {
     logoUrl: string;
-    copyWriteText: string;
-    align: string;
+    copyrightText: string;
+    align: "left" | "center" | "right";
+    logoWidth: number;
+    logoHeight: number;
   };
   // General components
-  Heading: {
+  Rubrik: {
     title: string;
     level: string;
     align: string;
     color: string;
     padding: string;
   };
-  Paragraph: {
+  Stycke: {
     content: string;
     align: string;
     color: string;
@@ -72,12 +74,12 @@ type Props = {
     maxWidth: string;
     padding: string;
   };
-  RichText: {
+  "Formaterad text": {
     content: string;
     padding: string;
     maxWidth: string;
   };
-  Image: {
+  Bild: {
     url: string;
     alt: string;
     maxWidth: string;
@@ -91,19 +93,19 @@ type Props = {
     maxWidth: string;
     align: string;
   };
-  Button: {
+  Knapp: {
     label: string;
     href: string;
     variant: string;
     align: string;
     padding: string;
   };
-  Divider: {
+  Avgränsare: {
     color: string;
     thickness: string;
     margin: string;
   };
-  Grid: {};
+  Rutnät: {};
 };
 
 export const config: Config<Props> = {
@@ -120,45 +122,52 @@ export const config: Config<Props> = {
     },
     General: {
       components: [
-        "Heading",
-        "Paragraph",
-        "RichText",
-        "Image",
+        "Rubrik",
+        "Stycke",
+        "Formaterad text",
+        "Bild",
         "Video",
-        "Button",
-        "Divider",
-        "Grid",
+        "Knapp",
+        "Avgränsare",
+        "Rutnät",
       ],
     },
   },
   components: {
     MinimalFooter: {
       fields: {
-        logoUrl: { type: "text" },
-        copyWriteText: { type: "text" },
+        logoUrl: { type: "text", label: "Logo-URL" },
+        copyrightText: { type: "text", label: "Copyright-text" },
+        logoWidth: { type: "number", label: "Logo bredd (px)" },
+        logoHeight: { type: "number", label: "Logo höjd (px)" },
         align: {
           type: "select",
+          label: "Justering",
           options: [
-            { label: "Center", value: "center" },
-            { label: "Left", value: "left" },
-            { label: "Right", value: "right" },
+            { label: "Centrerad", value: "center" },
+            { label: "Vänster", value: "left" },
+            { label: "Höger", value: "right" },
           ],
         },
       },
       defaultProps: {
         logoUrl: "/8848.png",
-        copyWriteText: "© 2026 All Right Reserved",
+        copyrightText: "© 2026 All Right Reserved",
         align: "center",
+        logoWidth: 60,
+        logoHeight: 20,
       },
-      render: ({ logoUrl, copyWriteText, align }) => (
+      render: ({ logoUrl, copyrightText, align, logoWidth, logoHeight }) => (
         <MinimalFooter
           logoUrl={logoUrl}
-          copyWriteText={copyWriteText}
+          copyrightText={copyrightText}
           align={align}
+          logoWidth={logoWidth}
+          logoHeight={logoHeight}
         />
       ),
     },
-    Grid: {
+    Rutnät: {
       render() {
         return (
           <DropZone
@@ -170,19 +179,20 @@ export const config: Config<Props> = {
     },
     HeroSection: {
       fields: {
-        imageUrl: { type: "text" },
-        height: { type: "number" },
-        width: { type: "number" },
+        imageUrl: { type: "text", label: "Bild-URL" },
+        height: { type: "number", label: "Höjd (px)" },
+        width: { type: "number", label: "Bredd (px)" },
         position: {
           type: "select",
+          label: "Position",
           options: [
-            { label: "Center", value: "center" },
-            { label: "Left", value: "left" },
-            { label: "Right", value: "right" },
+            { label: "Centrerad", value: "center" },
+            { label: "Vänster", value: "left" },
+            { label: "Höger", value: "right" },
           ],
         },
-        altText: { type: "text" },
-        articleNumber: { type: "text" },
+        altText: { type: "text", label: "Alt-text" },
+        articleNumber: { type: "text", label: "Artikelnummer" },
       },
       defaultProps: {
         imageUrl: "/jacka.png",
@@ -212,11 +222,12 @@ export const config: Config<Props> = {
     },
     KeyMetric: {
       fields: {
-        listofFacts: {
+        listOfFacts: {
           type: "array",
+          label: "Nyckelfakta",
           arrayFields: {
-            keyFact: { type: "text" },
-            value: { type: "text" },
+            keyFact: { type: "text", label: "Nyckeltal" },
+            value: { type: "text", label: "Beskrivning" },
           },
           defaultItemProps: {
             keyFact: "100%",
@@ -224,9 +235,10 @@ export const config: Config<Props> = {
           },
           getItemSummary: (item: any) => item.keyFact || "Fact",
         },
-        bgColor: { type: "text" },
+        backgroundColor: { type: "text", label: "Bakgrundsfärg" },
         accentColor: {
           type: "select",
+          label: "Accentfärg",
           options: [
             { label: "Green", value: "text-green-800" },
             { label: "Blue", value: "text-blue-800" },
@@ -237,18 +249,18 @@ export const config: Config<Props> = {
         },
       },
       defaultProps: {
-        listofFacts: [
+        listOfFacts: [
           { keyFact: "100%", value: "Recycled" },
           { keyFact: "PFAS-free", value: "Impregnation" },
           { keyFact: "0.17kg", value: "CO₂ / transport" },
         ],
-        bgColor: "#E2E2E2",
+        backgroundColor: "#E2E2E2",
         accentColor: "text-green-800",
       },
-      render: ({ listofFacts, bgColor, accentColor }) => (
+      render: ({ listOfFacts, backgroundColor, accentColor }) => (
         <ThreeKeyFacts
-          listofFacts={listofFacts}
-          bgColor={bgColor}
+          listOfFacts={listOfFacts}
+          backgroundColor={backgroundColor}
           accentColor={accentColor}
         />
       ),
@@ -257,14 +269,16 @@ export const config: Config<Props> = {
       fields: {
         items: {
           type: "array",
+          label: "Sektioner",
           arrayFields: {
-            title: { type: "text" },
-            content: { type: "textarea" },
+            title: { type: "text", label: "Rubrik" },
+            content: { type: "textarea", label: "Innehåll" },
             links: {
               type: "array",
+              label: "Länkar",
               arrayFields: {
-                label: { type: "text" },
-                url: { type: "text" },
+                label: { type: "text", label: "Länktext" },
+                url: { type: "text", label: "Länk-URL" },
               },
               getItemSummary: (item: any) => item.label || "Link",
             },
@@ -276,9 +290,9 @@ export const config: Config<Props> = {
           },
           getItemSummary: (item: any) => item.title || "Section",
         },
-        buttonColor: { type: "text" },
-        buttonHoverColor: { type: "text" },
-        contentBgColor: { type: "text" },
+        buttonColor: { type: "text", label: "Knappfärg" },
+        buttonHoverColor: { type: "text", label: "Hoverfärg" },
+        contentBackgroundColor: { type: "text", label: "Bakgrundsfärg" },
       },
       defaultProps: {
         items: [
@@ -296,32 +310,37 @@ export const config: Config<Props> = {
         ],
         buttonColor: "#065f46",
         buttonHoverColor: "#064e3b",
-        contentBgColor: "#ecfdf5",
+        contentBackgroundColor: "#ecfdf5",
       },
-      render: ({ items, buttonColor, buttonHoverColor, contentBgColor }) => (
+      render: ({
+        items,
+        buttonColor,
+        buttonHoverColor,
+        contentBackgroundColor,
+      }) => (
         <PopDownInfo
           items={items}
           buttonColor={buttonColor}
           buttonHoverColor={buttonHoverColor}
-          contentBgColor={contentBgColor}
+          contentBackgroundColor={contentBackgroundColor}
         />
       ),
     },
     CollectionSection: {
       fields: {
-        title: { type: "text" },
-        buttonText: { type: "text" },
-        buttonUrl: { type: "text" },
-        bgColor: { type: "text" },
-        mainImage: { type: "text" },
-        overlayImage1: { type: "text" },
-        overlayImage2: { type: "text" },
+        title: { type: "text", label: "Rubrik" },
+        buttonText: { type: "text", label: "Knapptext" },
+        buttonUrl: { type: "text", label: "Knapp-URL" },
+        backgroundColor: { type: "text", label: "Bakgrundsfärg" },
+        mainImage: { type: "text", label: "Huvudbild" },
+        overlayImage1: { type: "text", label: "Överläggsbild 1" },
+        overlayImage2: { type: "text", label: "Överläggsbild 2" },
       },
       defaultProps: {
         title: "Ny kollektion - Stay Iconic",
         buttonText: "Shoppa",
         buttonUrl: "https://www.8848altitude.com/en/8848-magazine",
-        bgColor: "#D4E9E2",
+        backgroundColor: "#D4E9E2",
         mainImage: "/twoGirls.webp",
         overlayImage1: "/jackaiStudio.webp",
         overlayImage2: "/girl2.webp",
@@ -330,7 +349,7 @@ export const config: Config<Props> = {
         title,
         buttonText,
         buttonUrl,
-        bgColor,
+        backgroundColor,
         mainImage,
         overlayImage1,
         overlayImage2,
@@ -339,7 +358,7 @@ export const config: Config<Props> = {
           title={title}
           buttonText={buttonText}
           buttonUrl={buttonUrl}
-          bgColor={bgColor}
+          backgroundColor={backgroundColor}
           mainImage={mainImage}
           overlayImage1={overlayImage1}
           overlayImage2={overlayImage2}
@@ -348,30 +367,32 @@ export const config: Config<Props> = {
     },
     ProductRecommendations: {
       fields: {
-        heading: { type: "text" },
-        linkText: { type: "text" },
-        linkUrl: { type: "text" },
+        heading: { type: "text", label: "Rubrik" },
+        linkText: { type: "text", label: "Länktext" },
+        linkUrl: { type: "text", label: "Länk-URL" },
         products: {
           type: "array",
+          label: "Produkter",
           arrayFields: {
-            productTitel: { type: "text" },
-            productCurrentPrice: { type: "number" },
-            productPrevPrice: { type: "number" },
-            productImageSrc: { type: "text" },
+            productTitle: { type: "text", label: "Produktnamn" },
+            productCurrentPrice: { type: "number", label: "Nuvarande pris" },
+            productPrevPrice: { type: "number", label: "Tidigare pris" },
+            productImageSrc: { type: "text", label: "Produktbild" },
             colorOptions: {
               type: "array",
+              label: "Färgalternativ",
               arrayFields: {
-                color: { type: "text" },
+                color: { type: "text", label: "Färgkod" },
               },
               getItemSummary: (item: any) => item.color || "Color",
             },
           },
           defaultItemProps: {
-            productTitel: "Product",
+            productTitle: "Product",
             productCurrentPrice: 999,
             productImageSrc: "/placeholder.webp",
           },
-          getItemSummary: (item: any) => item.productTitel || "Product",
+          getItemSummary: (item: any) => item.productTitle || "Product",
         },
       },
       defaultProps: {
@@ -380,7 +401,7 @@ export const config: Config<Props> = {
         linkUrl: "https://www.8848altitude.com/sv-SE/dam/skidklader/skidjackor",
         products: [
           {
-            productTitel: "Francias W Pant - Blanc",
+            productTitle: "Francias W Pant - Blanc",
             productCurrentPrice: 1299,
             productPrevPrice: 1799,
             colorOptions: [
@@ -414,11 +435,12 @@ export const config: Config<Props> = {
     // =====================
     // GENERAL COMPONENTS
     // =====================
-    Heading: {
+    Rubrik: {
       fields: {
-        title: { type: "text" },
+        title: { type: "text", label: "Rubrik" },
         level: {
           type: "select",
+          label: "Rubriknivå",
           options: [
             { label: "H1", value: "h1" },
             { label: "H2", value: "h2" },
@@ -428,14 +450,15 @@ export const config: Config<Props> = {
         },
         align: {
           type: "select",
+          label: "Justering",
           options: [
-            { label: "Left", value: "left" },
-            { label: "Center", value: "center" },
-            { label: "Right", value: "right" },
+            { label: "Vänster", value: "left" },
+            { label: "Centrerad", value: "center" },
+            { label: "Höger", value: "right" },
           ],
         },
-        color: { type: "text" },
-        padding: { type: "text" },
+        color: { type: "text", label: "Textfärg" },
+        padding: { type: "text", label: "Inre marginal (padding)" },
       },
       defaultProps: {
         title: "Heading",
@@ -465,29 +488,31 @@ export const config: Config<Props> = {
         return <div style={{ padding, textAlign: align as any }}>{inner}</div>;
       },
     },
-    Paragraph: {
+    Stycke: {
       fields: {
-        content: { type: "textarea" },
+        content: { type: "textarea", label: "Text" },
         align: {
           type: "select",
+          label: "Justering",
           options: [
-            { label: "Left", value: "left" },
-            { label: "Center", value: "center" },
-            { label: "Right", value: "right" },
+            { label: "Vänster", value: "left" },
+            { label: "Centrerad", value: "center" },
+            { label: "Höger", value: "right" },
           ],
         },
-        color: { type: "text" },
+        color: { type: "text", label: "Textfärg" },
         fontSize: {
           type: "select",
+          label: "Textstorlek",
           options: [
-            { label: "Small", value: "14px" },
-            { label: "Medium", value: "16px" },
-            { label: "Large", value: "18px" },
-            { label: "XL", value: "20px" },
+            { label: "Liten", value: "14px" },
+            { label: "Medel", value: "16px" },
+            { label: "Stor", value: "18px" },
+            { label: "Mycket stor", value: "20px" },
           ],
         },
-        maxWidth: { type: "text" },
-        padding: { type: "text" },
+        maxWidth: { type: "text", label: "Maxbredd" },
+        padding: { type: "text", label: "Inre marginal (padding)" },
       },
       defaultProps: {
         content:
@@ -518,11 +543,11 @@ export const config: Config<Props> = {
         </div>
       ),
     },
-    RichText: {
+    "Formaterad text": {
       fields: {
-        content: { type: "textarea" },
-        padding: { type: "text" },
-        maxWidth: { type: "text" },
+        content: { type: "textarea", label: "Text" },
+        padding: { type: "text", label: "Inre marginal (padding)" },
+        maxWidth: { type: "text", label: "Maxbredd" },
       },
       defaultProps: {
         content:
@@ -572,28 +597,30 @@ export const config: Config<Props> = {
         );
       },
     },
-    Image: {
+    Bild: {
       fields: {
-        url: { type: "text" },
-        alt: { type: "text" },
-        maxWidth: { type: "text" },
+        url: { type: "text", label: "Bild-URL" },
+        alt: { type: "text", label: "Alt-text" },
+        maxWidth: { type: "text", label: "Maxbredd" },
         align: {
           type: "select",
+          label: "Justering",
           options: [
-            { label: "Left", value: "flex-start" },
-            { label: "Center", value: "center" },
-            { label: "Right", value: "flex-end" },
+            { label: "Vänster", value: "flex-start" },
+            { label: "Centrerad", value: "center" },
+            { label: "Höger", value: "flex-end" },
           ],
         },
-        padding: { type: "text" },
+        padding: { type: "text", label: "Inre marginal (padding)" },
         rounded: {
           type: "select",
+          label: "Rundade hörn",
           options: [
-            { label: "None", value: "0" },
-            { label: "Small", value: "8px" },
-            { label: "Medium", value: "16px" },
-            { label: "Large", value: "24px" },
-            { label: "Full", value: "9999px" },
+            { label: "Ingen", value: "0" },
+            { label: "Liten", value: "8px" },
+            { label: "Medel", value: "16px" },
+            { label: "Stor", value: "24px" },
+            { label: "Helt", value: "9999px" },
           ],
         },
       },
@@ -622,15 +649,16 @@ export const config: Config<Props> = {
     },
     Video: {
       fields: {
-        url: { type: "text" },
-        padding: { type: "text" },
-        maxWidth: { type: "text" },
+        url: { type: "text", label: "Video-URL" },
+        padding: { type: "text", label: "Inre marginal (padding)" },
+        maxWidth: { type: "text", label: "Maxbredd" },
         align: {
           type: "select",
+          label: "Justering",
           options: [
-            { label: "Left", value: "flex-start" },
-            { label: "Center", value: "center" },
-            { label: "Right", value: "flex-end" },
+            { label: "Vänster", value: "flex-start" },
+            { label: "Centrerad", value: "center" },
+            { label: "Höger", value: "flex-end" },
           ],
         },
       },
@@ -658,27 +686,29 @@ export const config: Config<Props> = {
         </div>
       ),
     },
-    Button: {
+    Knapp: {
       fields: {
-        label: { type: "text" },
-        href: { type: "text" },
+        label: { type: "text", label: "Knapptext" },
+        href: { type: "text", label: "Länk-URL" },
         variant: {
           type: "select",
+          label: "Variant",
           options: [
-            { label: "Primary", value: "primary" },
-            { label: "Secondary", value: "secondary" },
-            { label: "Outline", value: "outline" },
+            { label: "Primär", value: "primary" },
+            { label: "Sekundär", value: "secondary" },
+            { label: "Kontur", value: "outline" },
           ],
         },
         align: {
           type: "select",
+          label: "Justering",
           options: [
-            { label: "Left", value: "flex-start" },
-            { label: "Center", value: "center" },
-            { label: "Right", value: "flex-end" },
+            { label: "Vänster", value: "flex-start" },
+            { label: "Centrerad", value: "center" },
+            { label: "Höger", value: "flex-end" },
           ],
         },
-        padding: { type: "text" },
+        padding: { type: "text", label: "Inre marginal (padding)" },
       },
       defaultProps: {
         label: "Click me",
@@ -732,18 +762,19 @@ export const config: Config<Props> = {
         );
       },
     },
-    Divider: {
+    Avgränsare: {
       fields: {
-        color: { type: "text" },
+        color: { type: "text", label: "Färg" },
         thickness: {
           type: "select",
+          label: "Tjocklek",
           options: [
-            { label: "Thin (1px)", value: "1px" },
-            { label: "Medium (2px)", value: "2px" },
-            { label: "Thick (4px)", value: "4px" },
+            { label: "Tunn (1px)", value: "1px" },
+            { label: "Medel (2px)", value: "2px" },
+            { label: "Tjock (4px)", value: "4px" },
           ],
         },
-        margin: { type: "text" },
+        margin: { type: "text", label: "Yttre marginal (margin)" },
       },
       defaultProps: {
         color: "#e2e2e2",

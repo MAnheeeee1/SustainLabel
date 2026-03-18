@@ -1,6 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { normalizePuckData } from "@/lib/puck-normalize";
 
 // POST /puck/api — create a new page
 export async function POST(request: Request) {
@@ -14,8 +15,12 @@ export async function POST(request: Request) {
 
   const { path, data } = await request.json();
   const slug = (path as string).replace(/^\//, "");
-  const name = data?.root?.props?.title || slug;
-  const content = data ?? { content: [], root: { props: { title: "" } } };
+  const normalizedData = normalizePuckData(data);
+  const name = normalizedData?.root?.props?.title || slug;
+  const content = normalizedData ?? {
+    content: [],
+    root: { props: { title: "" } },
+  };
 
   const { error } = await supabase.from("dpp_pages").insert({
     user_id: user.id,
@@ -48,13 +53,14 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { path, data } = await request.json();
+  const normalizedData = normalizePuckData(data);
   const slug = (path as string).replace(/^\//, "");
-  const name = data?.root?.props?.title || slug;
+  const name = normalizedData?.root?.props?.title || slug;
 
   const { error } = await supabase
     .from("dpp_pages")
     .upsert(
-      { user_id: user.id, slug, name, content: data },
+      { user_id: user.id, slug, name, content: normalizedData },
       { onConflict: "user_id,slug" },
     );
 

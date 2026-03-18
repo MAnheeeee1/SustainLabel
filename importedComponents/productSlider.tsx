@@ -4,7 +4,7 @@ import React, { useRef } from "react";
 import ProductCard from "./productCard";
 
 type Product = {
-  productTitel: string;
+  productTitle: string;
   productCurrentPrice: number;
   productPrevPrice?: number;
   colorOptions?: string[];
@@ -13,20 +13,20 @@ type Product = {
 
 const defaultProducts: Product[] = [
   {
-    productTitel: "Francias W Pant - Blanc",
+    productTitle: "Francias W Pant - Blanc",
     productCurrentPrice: 1299,
     productPrevPrice: 1799,
     colorOptions: ["#000", "#fff", "#c8102e"],
     productImageSrc: "/franciasPant.webp",
   },
   {
-    productTitel: "Star Shoftshell Mitte -Blanc",
+    productTitle: "Star Shoftshell Mitte -Blanc",
     productCurrentPrice: 999,
     colorOptions: ["#1a1a2e", "#e94560"],
     productImageSrc: "/starmitten.webp",
   },
   {
-    productTitel: "Rain Shell",
+    productTitle: "Rain Shell",
     productCurrentPrice: 699,
     productPrevPrice: 899,
     colorOptions: ["#0f3460", "#16213e", "#e94560"],

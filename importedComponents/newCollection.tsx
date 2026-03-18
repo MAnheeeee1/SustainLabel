@@ -5,7 +5,7 @@ type NewCollectionProps = {
   title?: string;
   buttonText?: string;
   buttonUrl?: string;
-  bgColor?: string;
+  backgroundColor?: string;
   mainImage?: string;
   overlayImage1?: string;
   overlayImage2?: string;
@@ -15,13 +15,13 @@ function NewCollection({
   title = "Ny kollektion - Stay Iconic",
   buttonText = "Shoppa",
   buttonUrl = "https://www.8848altitude.com/en/8848-magazine",
-  bgColor = "#D4E9E2",
+  backgroundColor = "#D4E9E2",
   mainImage = "/twoGirls.webp",
   overlayImage1 = "/jackaiStudio.webp",
   overlayImage2 = "/girl2.webp",
 }: NewCollectionProps) {
   return (
-    <div className="p-2 mt-15 pt-10 pb-25" style={{ backgroundColor: bgColor }}>
+    <div className="p-2 mt-15 pt-10 pb-25" style={{ backgroundColor }}>
       <h1 className="text-3xl pb-5">{title}</h1>
       <div className="flex justify-around">
         <div className="border self-start px-2.5 py-1 ">

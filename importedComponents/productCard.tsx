@@ -1,14 +1,14 @@
 import Image from "next/image";
 import React from "react";
 type ProductCardProps = {
-  productTitel: string;
+  productTitle: string;
   productCurrentPrice: number;
   productPrevPrice?: number;
   colorOptions?: string[];
   productImageSrc: string;
 };
 function ProductCard({
-  productTitel,
+  productTitle,
   productCurrentPrice,
   productPrevPrice,
   colorOptions,
@@ -23,7 +23,7 @@ function ProductCard({
         alt="Picture of jacket"
       />
       <div className="text-center">
-        <h4>{productTitel}</h4>
+        <h4>{productTitle}</h4>
         <h6 className="line-through opacity-67 text-sm text-">
           {productPrevPrice && productPrevPrice + " SEK"}
         </h6>
